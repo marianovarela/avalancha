@@ -7,16 +7,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface AvalanchaListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link AvalanchaParser#r}.
-	 * @param ctx the parse tree
-	 */
-	void enterR(AvalanchaParser.RContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link AvalanchaParser#r}.
-	 * @param ctx the parse tree
-	 */
-	void exitR(AvalanchaParser.RContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link AvalanchaParser#programa}.
 	 * @param ctx the parse tree
 	 */

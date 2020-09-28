@@ -1,25 +1,18 @@
 /**
- * Define a grammar called Hello
+ * Define a grammar called Avalancha
  */
-grammar Avalancha;
-r  : 'hello' ID ID 
-	| ;         // match keyword hello followed by an identifier
-
-ID : [a-z]+ ;             // match lower-case identifiers
+grammar Avalancha;       
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
 LINE_COMMENT
 : '--' ~[\r\n]* -> skip ;
 
-LOWERID : [a-z][_a-zA-Z0-9]*;
-UPPERID : [A-Z][_a-zA-Z0-9]*; 
-
-FUN :   'fun';
-CHECK : 'check';
-IMP :   'imp'; 
-AND :   'and';
-OR :    'or';
+FUN:   'fun';
+CHECK: 'check';
+IMP:   'imp'; 
+AND:   'and';
+OR:    'or';
 NOT:    'not';
 TRUE:   'True ' | 'true';
 FALSE:  'False' | 'false';
@@ -34,6 +27,8 @@ QUESTION:   '?';
 BANG:       '!';
 EQ:         '==';
 
+LOWERID : [a-z][_a-zA-Z0-9]*;
+UPPERID : [A-Z][_a-zA-Z0-9]*; 
 
 programa : declaraciones chequeos;
 

@@ -15,18 +15,6 @@ public class AvalanchaBaseListener implements AvalanchaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterR(AvalanchaParser.RContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitR(AvalanchaParser.RContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterPrograma(AvalanchaParser.ProgramaContext ctx) { }
 	/**
 	 * {@inheritDoc}
