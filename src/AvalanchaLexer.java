@@ -38,7 +38,7 @@ public class AvalanchaLexer extends Lexer {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'hello'", null, null, null, null, null, "'fun'", "'CHECK'", "'imp'", 
+			null, "'hello'", null, null, null, null, null, "'fun'", "'check'", "'imp'", 
 			"'and'", "'or'", "'not'", null, null, "'('", "')'", "','", "'->'", "'_'", 
 			"':'", "'?'", "'!'", "'=='"
 		};
@@ -140,8 +140,8 @@ public class AvalanchaLexer extends Lexer {
 		"\2KI\3\2\2\2LM\b\5\2\2M\n\3\2\2\2NR\t\2\2\2OQ\t\5\2\2PO\3\2\2\2QT\3\2"+
 		"\2\2RP\3\2\2\2RS\3\2\2\2S\f\3\2\2\2TR\3\2\2\2UY\t\6\2\2VX\t\5\2\2WV\3"+
 		"\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Z\16\3\2\2\2[Y\3\2\2\2\\]\7h\2\2]"+
-		"^\7w\2\2^_\7p\2\2_\20\3\2\2\2`a\7E\2\2ab\7J\2\2bc\7G\2\2cd\7E\2\2de\7"+
-		"M\2\2e\22\3\2\2\2fg\7k\2\2gh\7o\2\2hi\7r\2\2i\24\3\2\2\2jk\7c\2\2kl\7"+
+		"^\7w\2\2^_\7p\2\2_\20\3\2\2\2`a\7e\2\2ab\7j\2\2bc\7g\2\2cd\7e\2\2de\7"+
+		"m\2\2e\22\3\2\2\2fg\7k\2\2gh\7o\2\2hi\7r\2\2i\24\3\2\2\2jk\7c\2\2kl\7"+
 		"p\2\2lm\7f\2\2m\26\3\2\2\2no\7q\2\2op\7t\2\2p\30\3\2\2\2qr\7p\2\2rs\7"+
 		"q\2\2st\7v\2\2t\32\3\2\2\2uv\7V\2\2vw\7t\2\2wx\7w\2\2xy\7g\2\2y\177\7"+
 		"\"\2\2z{\7v\2\2{|\7t\2\2|}\7w\2\2}\177\7g\2\2~u\3\2\2\2~z\3\2\2\2\177"+

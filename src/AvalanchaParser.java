@@ -42,7 +42,7 @@ public class AvalanchaParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'hello'", null, null, null, null, null, "'fun'", "'CHECK'", "'imp'", 
+			null, "'hello'", null, null, null, null, null, "'fun'", "'check'", "'imp'", 
 			"'and'", "'or'", "'not'", null, null, "'('", "')'", "','", "'->'", "'_'", 
 			"':'", "'?'", "'!'", "'=='"
 		};

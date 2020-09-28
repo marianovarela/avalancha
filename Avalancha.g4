@@ -16,7 +16,7 @@ LOWERID : [a-z][_a-zA-Z0-9]*;
 UPPERID : [A-Z][_a-zA-Z0-9]*; 
 
 FUN :   'fun';
-CHECK : 'CHECK';
+CHECK : 'check';
 IMP :   'imp'; 
 AND :   'and';
 OR :    'or';

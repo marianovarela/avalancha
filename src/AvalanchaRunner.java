@@ -16,7 +16,11 @@ public class AvalanchaRunner
 		AvalanchaParser parser = new AvalanchaParser(tokens);
 		ParseTree tree = parser.programa();
 		System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+		
+		AST ast = new AST(tree);
+
+        System.out.println(ast);
+        
+        System.out.println(Examples.toJson(tree));
 	}
 }
-
-
