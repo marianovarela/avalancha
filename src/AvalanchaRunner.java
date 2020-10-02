@@ -4,6 +4,7 @@ import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.json.JSONArray;
 import org.json.JSONObject;
     
 public class AvalanchaRunner 
@@ -31,7 +32,36 @@ public class AvalanchaRunner
         
         JSONObject jsonObject = new JSONObject(strJson);
         
-        List programs = new ArrayList<String>(); 
+        List programs = getProgram(jsonObject);
         
+	}
+
+	private static List getProgram(JSONObject jsonObject) {
+		List programs = new ArrayList<String>();
+		
+		for (String s : jsonObject.keySet()) {
+			System.out.println(s);
+		}
+		programs.add("program");
+		
+		JSONArray program = jsonObject.getJSONArray("programa");
+		
+		JSONObject declarationsObject = program.getJSONObject(0);
+		JSONObject checksObject = program.getJSONObject(1);
+		
+		List declarations = makeDeclarations(declarationsObject);
+		List checks = makeChecks(checksObject);
+		
+		return programs;
+	}
+
+	private static List makeChecks(JSONObject checksObject) {
+		System.out.println(checksObject);
+		return null;
+	}
+
+	private static List makeDeclarations(JSONObject declarationsObject) {
+		
+		return null;
 	}
 }
