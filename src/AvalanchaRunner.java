@@ -1,4 +1,5 @@
  import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -101,7 +102,12 @@ public class AvalanchaRunner
 		Object formulaResult = makeFormulaImpOrAndNeg(
 				((JSONObject) formulaArray.get(0))
 				.getJSONArray("formulaImpOrAndNeg"));
-		formula.add(formulaResult);
+		// valida el tipo de objeto que retorno
+		if (formulaResult instanceof Collection<?>){
+			formula.addAll((List) formulaResult);
+		} else {
+			formula.add(formulaResult);
+		}
 		return formula;
 	}
 
@@ -163,7 +169,28 @@ public class AvalanchaRunner
 			JSONObject formula = (JSONObject) array.get(0); 
 			result = formula.get("text");
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			JSONObject expresion = ((JSONObject) array.get(1));
+			if(expresion.get("text").equals("==")) {
+				List<Object> listResult = new ArrayList<Object>();
+				listResult.add("equal");
+				//first var
+				List<Object> first = new ArrayList<Object>();
+				first.add("var");
+				first.add(((JSONObject)
+						((JSONObject) array.get(0)).getJSONArray("expresion")
+							.get(0)).get("text"));
+				//second var
+				List<Object> second = new ArrayList<Object>();
+				second.add("var");
+				second.add(((JSONObject)
+						((JSONObject) array.get(2)).getJSONArray("expresion")
+						.get(0)).get("text"));
+				
+				
+				listResult.add(first);
+				listResult.add(second);
+				result = listResult;
+			}
 		}
 		
 		return result;
