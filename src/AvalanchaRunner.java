@@ -42,7 +42,6 @@ public class AvalanchaRunner
 
 	private static List<Object> getProgram(JSONObject jsonObject) {
 		List<Object> programs = new ArrayList<Object>();
-//		JSONArray programs = new JSONArray();
 		
 		for (String s : jsonObject.keySet()) {
 			System.out.println(s);
@@ -73,10 +72,16 @@ public class AvalanchaRunner
 		if(!checkArray.isEmpty()) {
 			List<Object> check = makeCheck((JSONObject) checkArray.get(0));
 			checks.add(check);
-//			List<Object> nextChecks = checkArray.get(1); //TODO ver como seguir
+			List<Object> nextChecks = makeChecks((JSONObject) checkArray.get(1));
+			checks.addAll(nextChecks);
 		}
 		
 		return checks;
+	}
+
+	private static List<Object> makeRecursiveChecks(JSONObject checksObject) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private static List<Object> makeCheck(JSONObject object) {
