@@ -80,16 +80,11 @@ public class AvalanchaRunner
 		return checks;
 	}
 
-	private static List<Object> makeRecursiveChecks(JSONObject checksObject) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	private static List<Object> makeCheck(JSONObject object) {
 		List<Object> check = new ArrayList<Object>();
 		check.add("check");
 		JSONArray checkArray = object.getJSONArray("chequeo");
-		List<Object> formula =  makeFormula((JSONObject) checkArray.get(1));
+		List<Object> formula = makeFormula((JSONObject) checkArray.get(1));
 		check.add(formula);
 		return check;
 	}
@@ -174,24 +169,52 @@ public class AvalanchaRunner
 				List<Object> listResult = new ArrayList<Object>();
 				listResult.add("equal");
 				//first var
-				List<Object> first = new ArrayList<Object>();
-				first.add("var");
-				first.add(((JSONObject)
-						((JSONObject) array.get(0)).getJSONArray("expresion")
-							.get(0)).get("text"));
+				List<Object> first = extractedVar(array, 0);
 				//second var
-				List<Object> second = new ArrayList<Object>();
-				second.add("var");
-				second.add(((JSONObject)
-						((JSONObject) array.get(2)).getJSONArray("expresion")
-						.get(0)).get("text"));
-				
+				List<Object> second = extractedVar(array, 2);
 				
 				listResult.add(first);
 				listResult.add(second);
 				result = listResult;
 			}
 		}
+		
+		return result;
+	}
+
+	private static List<Object> extractedVar(JSONArray array, int index) {
+		List<Object> result = new ArrayList<Object>();
+		JSONArray expArray = ((JSONObject) array.get(index)).getJSONArray("expresion");
+		Object value = ((JSONObject)
+				((JSONObject) array.get(index)).getJSONArray("expresion")
+				.get(0)).get("text"); // es un string
+		Character firstChar = ((String) value).charAt(0);
+		if(firstChar.isUpperCase(firstChar)) {
+			JSONArray expresion = ((JSONObject) array.get(index)).getJSONArray("expresion");
+			System.out.println(expresion.length());
+			result.add("cons");
+			result.add(value);
+			if(expArray.length() == 1) {
+				result.add(new ArrayList<Object>());
+			} else {
+				JSONArray listaExpresiones = expresion.getJSONObject(2).getJSONArray("listaExpresiones");
+				if(listaExpresiones.isEmpty()) {
+					result.add(new ArrayList<Object>());
+				} else {
+					result.add(makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
+				}
+			}
+		} else {
+			result.add("var");
+			result.add(value);
+		}
+		return result;
+	}
+
+	private static Object makeListaExpresionesNoVacia(JSONObject object) {
+		List<Object> result = new ArrayList<Object>();
+		JSONArray list = object.getJSONArray("listaExpresionesNoVacia");
+		result.add(extractedVar(list, 0));
 		
 		return result;
 	}
