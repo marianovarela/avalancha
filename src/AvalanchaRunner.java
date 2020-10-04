@@ -215,7 +215,9 @@ public class AvalanchaRunner
 		List<Object> result = new ArrayList<Object>();
 		JSONArray list = object.getJSONArray("listaExpresionesNoVacia");
 		result.add(extractedVar(list, 0));
-		
+		if(list.length() == 3) {
+			result.addAll((List) makeListaExpresionesNoVacia(list.getJSONObject(2)));
+		}
 		return result;
 	}
 
