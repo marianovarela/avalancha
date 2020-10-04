@@ -7,12 +7,12 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.JSONArray;
 import org.json.JSONObject;
     
+@SuppressWarnings("deprecation")
 public class AvalanchaRunner 
 {
 	public static void main( String[] args) throws Exception 
 	{
 
-		@SuppressWarnings("deprecation")
 		ANTLRInputStream input = new ANTLRInputStream(System.in);
 		AvalanchaLexer lexer = new AvalanchaLexer(input);
 		
@@ -32,12 +32,17 @@ public class AvalanchaRunner
         
         JSONObject jsonObject = new JSONObject(strJson);
         
-        List programs = getProgram(jsonObject);
+        List<Object> programs = getProgram(jsonObject);
+        
+        System.out.println("*******************************************************");
+        System.out.println("Programa a imprimir");
+        System.out.println(new JSONArray(programs));
         
 	}
 
-	private static List getProgram(JSONObject jsonObject) {
-		List programs = new ArrayList<String>();
+	private static List<Object> getProgram(JSONObject jsonObject) {
+		List<Object> programs = new ArrayList<Object>();
+//		JSONArray programs = new JSONArray();
 		
 		for (String s : jsonObject.keySet()) {
 			System.out.println(s);
@@ -49,19 +54,123 @@ public class AvalanchaRunner
 		JSONObject declarationsObject = program.getJSONObject(0);
 		JSONObject checksObject = program.getJSONObject(1);
 		
-		List declarations = makeDeclarations(declarationsObject);
-		List checks = makeChecks(checksObject);
+		List<Object> declarations = makeDeclarations(declarationsObject);
+		List<Object> checks = makeChecks(checksObject);
+		
+		programs.add(declarations);
+		programs.add(checks);
 		
 		return programs;
 	}
 
-	private static List makeChecks(JSONObject checksObject) {
+	private static List<Object> makeChecks(JSONObject checksObject) {
+		List<Object> checks = new ArrayList<Object>();
+		
 		System.out.println(checksObject);
-		return null;
+		
+		
+		JSONArray checkArray = checksObject.getJSONArray("chequeos");
+		if(!checkArray.isEmpty()) {
+			List<Object> check = makeCheck((JSONObject) checkArray.get(0));
+			checks.add(check);
+//			List<Object> nextChecks = checkArray.get(1); //TODO ver como seguir
+		}
+		
+		return checks;
 	}
 
-	private static List makeDeclarations(JSONObject declarationsObject) {
-		
-		return null;
+	private static List<Object> makeCheck(JSONObject object) {
+		List<Object> check = new ArrayList<Object>();
+		check.add("check");
+		JSONArray checkArray = object.getJSONArray("chequeo");
+		List<Object> formula =  makeFormula((JSONObject) checkArray.get(1));
+		check.add(formula);
+		return check;
 	}
+
+	private static List<Object> makeFormula(JSONObject formulaObject) {
+		// hay que contemplar 7 casos
+		List<Object> formula = new ArrayList<Object>();
+		JSONArray formulaArray = formulaObject.getJSONArray("formula");
+		// devuelve un objecto porque puede ser un simple string o una lista de una construcion 
+		Object formulaResult = makeFormulaImpOrAndNeg(
+				((JSONObject) formulaArray.get(0))
+				.getJSONArray("formulaImpOrAndNeg"));
+		formula.add(formulaResult);
+		return formula;
+	}
+
+	private static Object makeFormulaImpOrAndNeg(JSONArray array) {
+		Object result = null;
+		if(array.length() == 1) {
+			result = makeFormulaOrAndNeg( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaOrAndNeg"));
+		} else {
+			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+		}
+		
+		return result;
+	}
+
+	private static Object makeFormulaOrAndNeg(JSONArray array) {
+		Object result = null;
+		if(array.length() == 1) {
+			result = makeFormulaAndNeg( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaAndNeg"));
+		} else {
+			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+		}
+		
+		return result;
+	}
+
+	private static Object makeFormulaAndNeg(JSONArray array) {
+		Object result = null;
+		if(array.length() == 1) {
+			result = makeFormulaNeg( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaNeg"));
+		} else {
+			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+		}
+		
+		return result;
+	}
+
+	private static Object makeFormulaNeg(JSONArray array) {
+		Object result = null;
+		if(array.length() == 1) {
+			result = makeFormulaAtomica( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaAtomica"));
+		} else {
+			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+		}
+		
+		return result;
+	}
+
+	private static Object makeFormulaAtomica(JSONArray array) {
+		Object result = null;
+		if(array.length() == 1) {
+			JSONObject formula = (JSONObject) array.get(0); 
+			result = formula.get("text");
+		} else {
+			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+		}
+		
+		return result;
+	}
+
+	private static List<Object> makeDeclarations(JSONObject declarationsObject) {
+		List<Object> declarations = new ArrayList<Object>();
+		
+		System.out.println(declarationsObject);
+		
+		return declarations;
+	}
+	
+	
 }

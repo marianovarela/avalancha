@@ -14,8 +14,8 @@ IMP:   'imp';
 AND:   'and';
 OR:    'or';
 NOT:    'not';
-TRUE:   'True ' | 'true';
-FALSE:  'False' | 'false';
+TRUE:   ('True ' | 'true');
+FALSE:  ('False' | 'false');
 
 LPAREN:     '(';
 RPAREN:     ')';
@@ -82,6 +82,6 @@ formulaOrAndNeg: formulaAndNeg | formulaAndNeg OR formulaOrAndNeg;
 
 formulaAndNeg : formulaNeg | formulaNeg AND formulaAndNeg;
 
-formulaNeg : formulaAtomica NOT formulaNeg;
+formulaNeg : formulaAtomica | NOT formulaNeg;
 
 formulaAtomica : TRUE | FALSE | LPAREN formula RPAREN | expresion | expresion EQ expresion;
