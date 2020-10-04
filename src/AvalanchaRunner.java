@@ -162,7 +162,8 @@ public class AvalanchaRunner
 		Object result = null;
 		if(array.length() == 1) {
 			JSONObject formula = (JSONObject) array.get(0); 
-			result = formula.get("text");
+			result = makeExpresion(formula);
+			//formula.get("text");
 		} else {
 			JSONObject expresion = ((JSONObject) array.get(1));
 			if(expresion.get("text").equals("==")) {
@@ -177,6 +178,31 @@ public class AvalanchaRunner
 				listResult.add(second);
 				result = listResult;
 			}
+		}
+		
+		return result;
+	}
+
+	private static Object makeExpresion(JSONObject formula) {
+		Object result = null;
+		if(formula.opt("text") != null) {
+			result = formula.get("text");
+		} else if(formula.opt("expresion") != null){ // caso output 5
+			JSONArray expresionArray = formula.getJSONArray("expresion");
+			List<Object> equals = new ArrayList<Object>();
+			equals.add("equal");
+			List<Object> first = new ArrayList<Object>();
+			first.add("app");
+			first.add(expresionArray.getJSONObject(0).get("text"));
+			first.add(new ArrayList<Object>());
+			List<Object> second = new ArrayList<Object>();
+			second.add("cons");
+			second.add("True");
+			second.add(new ArrayList<Object>());
+			
+			equals.add(first);
+			equals.add(second);
+			result = equals;
 		}
 		
 		return result;
@@ -205,8 +231,17 @@ public class AvalanchaRunner
 				}
 			}
 		} else {
-			result.add("var");
-			result.add(value);
+			if(expArray.length() == 4) {
+				result.add("app");
+				result.add(value);
+				JSONArray listaExpresiones = expArray.getJSONObject(2).getJSONArray("listaExpresiones");
+				if(listaExpresiones.isEmpty()) {
+					result.add(new ArrayList<Object>());
+				}
+			} else { // solo es una variable
+				result.add("var");
+				result.add(value);
+			}
 		}
 		return result;
 	}
@@ -228,6 +263,5 @@ public class AvalanchaRunner
 		
 		return declarations;
 	}
-	
 	
 }
