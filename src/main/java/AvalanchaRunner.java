@@ -1,8 +1,10 @@
+package main.java;
  import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.json.JSONArray;
@@ -13,7 +15,6 @@ public class AvalanchaRunner
 {
 	public static void main( String[] args) throws Exception 
 	{
-
 		ANTLRInputStream input = new ANTLRInputStream(System.in);
 		AvalanchaLexer lexer = new AvalanchaLexer(input);
 		
@@ -38,7 +39,38 @@ public class AvalanchaRunner
         System.out.println("*******************************************************");
         System.out.println("Programa a imprimir");
         System.out.println(new JSONArray(programs));
+//		String content = "check true";
+//		getAST(content);
         
+	}
+	
+	public static String getAST(String content) {
+		CharStream input = new ANTLRInputStream(content);
+		AvalanchaLexer lexer = new AvalanchaLexer(input);
+		
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+	
+		AvalanchaParser parser = new AvalanchaParser(tokens);
+		ParseTree tree = parser.programa();
+		System.out.println(tree.toStringTree(parser)); // print LISP-style tree
+		
+		AST ast = new AST(tree);
+	
+	    System.out.println(ast);
+	    
+	    String strJson = Examples.toJson(tree);
+	    
+	    System.out.println(strJson);
+	    
+	    JSONObject jsonObject = new JSONObject(strJson);
+	    
+	    List<Object> programs = getProgram(jsonObject);
+	    
+	    System.out.println("*******************************************************");
+	    System.out.println("Programa a imprimir");
+	    String astString = new JSONArray(programs).toString();
+	    System.out.println(astString);
+	    return astString;
 	}
 
 	private static List<Object> getProgram(JSONObject jsonObject) {
@@ -237,6 +269,8 @@ public class AvalanchaRunner
 				JSONArray listaExpresiones = expArray.getJSONObject(2).getJSONArray("listaExpresiones");
 				if(listaExpresiones.isEmpty()) {
 					result.add(new ArrayList<Object>());
+				} else {
+					result.add(makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
 				}
 			} else { // solo es una variable
 				result.add("var");

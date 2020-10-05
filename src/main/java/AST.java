@@ -1,3 +1,4 @@
+package main.java;
 /*
  * Copyright (c) 2014 by Bart Kiers
  *
