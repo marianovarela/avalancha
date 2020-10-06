@@ -225,7 +225,13 @@ public class AvalanchaRunner
 		JSONObject secondExp = ((JSONObject) array.get(1));
 		JSONArray formula = (JSONArray) Extractor.getFormulaAtomica((JSONObject) array.get(1));
 		if(formula.length() == 3) {
-			return resolveParentesis(formula);
+			if(formula.getJSONObject(1).has("formula")) {
+				return resolveParentesis(formula);
+			} else if(formula.getJSONObject(1).has("text")){
+				return makeFormulaAtomica(formula);
+			}else {
+				//TODO
+			}
 		}		
 		JSONObject exp = (JSONObject) formula.get(0);
 		
