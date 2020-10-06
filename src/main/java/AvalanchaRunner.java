@@ -195,23 +195,43 @@ public class AvalanchaRunner
 		if(array.length() == 1) {
 			JSONObject formula = (JSONObject) array.get(0); 
 			result = makeExpresion(formula);
-			//formula.get("text");
 		} else {
-			JSONObject expresion = ((JSONObject) array.get(1));
-			if(expresion.get("text").equals("==")) {
-				List<Object> listResult = new ArrayList<Object>();
-				listResult.add("equal");
-				//first var
-				List<Object> first = extractedVar(array, 0);
-				//second var
-				List<Object> second = extractedVar(array, 2);
-				
-				listResult.add(first);
-				listResult.add(second);
-				result = listResult;
+			JSONObject firstExp = ((JSONObject) array.get(0));
+			JSONObject thirdExp = ((JSONObject) array.get(2));
+			if(firstExp.has("text") && firstExp.get("text").equals("(") && thirdExp.has("text") && thirdExp.get("text").equals(")")) {
+				result = resolveParentesis(array);
+			}else {
+				JSONObject expresion = ((JSONObject) array.get(1));
+				if(expresion.get("text").equals("==")) {
+					List<Object> listResult = new ArrayList<Object>();
+					listResult.add("equal");
+					//first var
+					List<Object> first = extractedVar(array, 0);
+					//second var
+					List<Object> second = extractedVar(array, 2);
+					
+					listResult.add(first);
+					listResult.add(second);
+					result = listResult;
+				}
 			}
 		}
 		
+		return result;
+	}
+
+	private static Object resolveParentesis(JSONArray array) { //caso output 6
+		Object result;
+		JSONObject secondExp = ((JSONObject) array.get(1));
+		JSONArray formula = (JSONArray) Extractor.getFormulaAtomica((JSONObject) array.get(1));
+		if(formula.length() == 3) {
+			return resolveParentesis(formula);
+		}		
+		JSONObject exp = (JSONObject) formula.get(0);
+		
+		//first var
+		Object first = makeExpresion(exp);
+		result = first;
 		return result;
 	}
 
@@ -224,9 +244,14 @@ public class AvalanchaRunner
 			List<Object> equals = new ArrayList<Object>();
 			equals.add("equal");
 			List<Object> first = new ArrayList<Object>();
-			first.add("app");
-			first.add(expresionArray.getJSONObject(0).get("text"));
-			first.add(new ArrayList<Object>());
+			if(expresionArray.length() == 4) {
+				first.add("app");
+				first.add(expresionArray.getJSONObject(0).get("text"));
+				first.add(new ArrayList<Object>());
+			} else { // es 1 es una variable
+				first.add("var");
+				first.add(expresionArray.getJSONObject(0).get("text"));
+			}
 			List<Object> second = new ArrayList<Object>();
 			second.add("cons");
 			second.add("True");
