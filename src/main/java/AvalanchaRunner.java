@@ -145,7 +145,16 @@ public class AvalanchaRunner
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaOrAndNeg"));
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			List<Object> imp = new ArrayList<Object>();
+			imp.add(((JSONObject) array.get(1)).get("text")); //and imp or
+			imp.add(makeFormulaOrAndNeg( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaOrAndNeg")));
+			imp.add(makeFormulaImpOrAndNeg( 
+					((JSONObject) array.get(2))
+					.getJSONArray("formulaImpOrAndNeg")));
+			
+			result = imp;
 		}
 		
 		return result;
@@ -158,16 +167,16 @@ public class AvalanchaRunner
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaAndNeg"));
 		} else {
-			List<Object> and = new ArrayList<Object>();
-			and.add(((JSONObject) array.get(1)).get("text")); //and imp or
-			and.add(makeFormulaAndNeg( 
+			List<Object> or = new ArrayList<Object>();
+			or.add(((JSONObject) array.get(1)).get("text")); //and imp or
+			or.add(makeFormulaAndNeg( 
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaAndNeg")));
-			and.add(makeFormulaOrAndNeg( 
+			or.add(makeFormulaOrAndNeg( 
 					((JSONObject) array.get(2))
 					.getJSONArray("formulaOrAndNeg")));
 			
-			result = and;
+			result = or;
 		}
 		
 		return result;
@@ -256,10 +265,12 @@ public class AvalanchaRunner
 					return makeFormulaAndNeg(formula);
 				} else if(operation.equals("or")){
 					return makeFormulaOrAndNeg(formula);
+				} else if(operation.equals("imp")){
+					return makeFormulaImpOrAndNeg(formula);
 				} else {
 					return makeFormulaAtomica(formula);
 				}
-			}else {
+			} else {
 				//TODO
 			}
 		} else if(formula.length() == 2){
