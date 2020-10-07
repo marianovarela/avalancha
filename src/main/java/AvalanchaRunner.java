@@ -171,8 +171,17 @@ public class AvalanchaRunner
 			result = makeFormulaNeg( 
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaNeg"));
-		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+		} else {//length == 3
+			List<Object> and = new ArrayList<Object>();
+			and.add(((JSONObject) array.get(1)).get("text")); //and imp or
+			and.add(makeFormulaNeg( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaNeg")));
+			and.add(makeFormulaAndNeg( 
+					((JSONObject) array.get(2))
+					.getJSONArray("formulaAndNeg")));
+			
+			result = and;
 		}
 		
 		return result;
@@ -234,14 +243,17 @@ public class AvalanchaRunner
 			if(formula.getJSONObject(1).has("formula")) {
 				return resolveParentesis(formula);
 			} else if(formula.getJSONObject(1).has("text")){
-				return makeFormulaAtomica(formula);
+				String operation = (String) formula.getJSONObject(1).get("text");
+				if(operation.equals("and")) {
+					return makeFormulaAndNeg(formula);
+				} else {
+					return makeFormulaAtomica(formula);
+				}
 			}else {
 				//TODO
 			}
 		} else if(formula.length() == 2){
 			if(formula.getJSONObject(1).has("formulaNeg")){
-				//TODO
-				System.out.println("hay que agregar un not");
 				return makeFormulaNeg(formula);
 			}
 		}
@@ -267,8 +279,16 @@ public class AvalanchaRunner
 				first.add(expresionArray.getJSONObject(0).get("text"));
 				first.add(new ArrayList<Object>());
 			} else { // es 1 es una variable
-				first.add("var");
-				first.add(expresionArray.getJSONObject(0).get("text"));
+				Object value = expresionArray.getJSONObject(0).get("text");  
+				Character firstChar = ((String) value).charAt(0);
+				if(firstChar.isUpperCase(firstChar)) {
+					first.add("cons");
+					first.add(value);
+					first.add(new ArrayList<Object>());
+				} else {
+					first.add("var");
+					first.add(expresionArray.getJSONObject(0).get("text"));
+				}
 			}
 			List<Object> second = new ArrayList<Object>();
 			second.add("cons");

@@ -51,7 +51,7 @@ public class Extractor {
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaNeg"));
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			return array;
 		}
 		
 		return result;
