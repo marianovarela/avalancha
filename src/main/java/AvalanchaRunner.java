@@ -158,7 +158,16 @@ public class AvalanchaRunner
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaAndNeg"));
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			List<Object> and = new ArrayList<Object>();
+			and.add(((JSONObject) array.get(1)).get("text")); //and imp or
+			and.add(makeFormulaAndNeg( 
+					((JSONObject) array.get(0))
+					.getJSONArray("formulaAndNeg")));
+			and.add(makeFormulaOrAndNeg( 
+					((JSONObject) array.get(2))
+					.getJSONArray("formulaOrAndNeg")));
+			
+			result = and;
 		}
 		
 		return result;
@@ -183,7 +192,6 @@ public class AvalanchaRunner
 			
 			result = and;
 		}
-		
 		return result;
 	}
 
@@ -246,6 +254,8 @@ public class AvalanchaRunner
 				String operation = (String) formula.getJSONObject(1).get("text");
 				if(operation.equals("and")) {
 					return makeFormulaAndNeg(formula);
+				} else if(operation.equals("or")){
+					return makeFormulaOrAndNeg(formula);
 				} else {
 					return makeFormulaAtomica(formula);
 				}
