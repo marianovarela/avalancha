@@ -25,7 +25,7 @@ public class Extractor {
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaOrAndNeg"));
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			System.out.println("sdfdsfdsf");
 		}
 		
 		return result;
@@ -64,7 +64,18 @@ public class Extractor {
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaAtomica");
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			System.out.println("hay que devolver el not");
+//			
+//			List<Object> neg = new ArrayList<Object>();
+//			neg.add("not");
+//			neg.add(makeFormulaNeg( // todo
+//					((JSONObject) array.get(1))
+//					.getJSONArray("formulaNeg")));
+//			result = neg;
+			//result = AvalanchaRunner.makeFormulaNeg(((JSONObject) array.get(1)).getJSONArray("formulaNeg"));
+//			result = ((JSONObject) array.get(1)).getJSONArray("formulaNeg");
+			return array;
+			
 		}
 		
 		return result;

@@ -166,6 +166,7 @@ public class AvalanchaRunner
 
 	private static Object makeFormulaAndNeg(JSONArray array) {
 		Object result = null;
+		
 		if(array.length() == 1) {
 			result = makeFormulaNeg( 
 					((JSONObject) array.get(0))
@@ -177,14 +178,19 @@ public class AvalanchaRunner
 		return result;
 	}
 
-	private static Object makeFormulaNeg(JSONArray array) {
+	static Object makeFormulaNeg(JSONArray array) {
 		Object result = null;
 		if(array.length() == 1) {
 			result = makeFormulaAtomica( 
 					((JSONObject) array.get(0))
 					.getJSONArray("formulaAtomica"));
 		} else {
-			// formulaOrAndNegi hIMPi formulaImpOrAndNegi
+			List<Object> neg = new ArrayList<Object>();
+			neg.add("not");
+			neg.add(makeFormulaNeg( // todo
+					((JSONObject) array.get(1))
+					.getJSONArray("formulaNeg")));
+			result = neg;
 		}
 		
 		return result;
@@ -232,7 +238,13 @@ public class AvalanchaRunner
 			}else {
 				//TODO
 			}
-		}		
+		} else if(formula.length() == 2){
+			if(formula.getJSONObject(1).has("formulaNeg")){
+				//TODO
+				System.out.println("hay que agregar un not");
+				return makeFormulaNeg(formula);
+			}
+		}
 		JSONObject exp = (JSONObject) formula.get(0);
 		
 		//first var
