@@ -121,7 +121,7 @@ public class AvalanchaRunner
 		return check;
 	}
 
-	private static List<Object> makeFormula(JSONObject formulaObject) {
+	static List<Object> makeFormula(JSONObject formulaObject) {
 		// hay que contemplar 7 casos
 		List<Object> formula = new ArrayList<Object>();
 		JSONArray formulaArray = formulaObject.getJSONArray("formula");
@@ -298,7 +298,12 @@ public class AvalanchaRunner
 			if(expresionArray.length() == 4) {
 				first.add("app");
 				first.add(expresionArray.getJSONObject(0).get("text"));
-				first.add(new ArrayList<Object>());
+				JSONArray listaExpresiones = expresionArray.getJSONObject(2).getJSONArray("listaExpresiones");
+				if(listaExpresiones.isEmpty()) {
+					first.add(new ArrayList<Object>());
+				} else {
+					first.add(makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
+				}
 			} else { // es 1 es una variable
 				Object value = expresionArray.getJSONObject(0).get("text");  
 				Character firstChar = ((String) value).charAt(0);

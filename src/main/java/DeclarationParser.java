@@ -51,11 +51,14 @@ public class DeclarationParser {
 		List<Object> postcondition = new ArrayList<Object>();
 		JSONArray postconditionArray = jsonObject.getJSONArray("postcondicion");
 		postcondition.add("post");
+		List<Object> list = new ArrayList<Object>();
 		if(postconditionArray.isEmpty()) {
-			List<Object> list = new ArrayList<Object>();
 			list.add("true");
-			postcondition.add(list);
+		} else {
+			List<Object> formula = AvalanchaRunner.makeFormula((JSONObject) postconditionArray.get(1));
+			list.addAll(formula);
 		}
+		postcondition.add(list);
 		
 		return postcondition;
 	}
@@ -64,11 +67,14 @@ public class DeclarationParser {
 		List<Object> precondition = new ArrayList<Object>();
 		JSONArray preconditionArray = jsonObject.getJSONArray("precondicion");
 		precondition.add("pre");
+		List<Object> list = new ArrayList<Object>();
 		if(preconditionArray.isEmpty()) {
-			List<Object> list = new ArrayList<Object>();
 			list.add("true");
-			precondition.add(list);
+		}else {
+			List<Object> formula = AvalanchaRunner.makeFormula((JSONObject) preconditionArray.get(1));
+			list.addAll(formula);
 		}
+		precondition.add(list);
 		
 		return precondition;
 	}
