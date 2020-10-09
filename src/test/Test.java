@@ -119,7 +119,16 @@ public class Test {
 		System.out.println(content);
 		String astResult = AvalanchaRunner.getAST(content);
 		assertEquals(expected.replaceAll("\\s",""), astResult);
-	}
+	}	
+	
+	@org.junit.jupiter.api.Test
+	void test12() throws IOException {		
+		String content = getContent("src/test/resources/test12.input");
+		String expected = getContent("src/test/resources/test12.expected");
+		System.out.println(content);
+		String astResult = AvalanchaRunner.getAST(content);
+		assertEquals(expected.replaceAll("\\s",""), astResult);
+	}	
 	
 	private String getContent(String path) throws FileNotFoundException, IOException {
 		//pat example "src/test/resources/test00.input"

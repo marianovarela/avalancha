@@ -86,7 +86,7 @@ public class AvalanchaRunner
 		JSONObject declarationsObject = program.getJSONObject(0);
 		JSONObject checksObject = program.getJSONObject(1);
 		
-		List<Object> declarations = makeDeclarations(declarationsObject);
+		List<Object> declarations = DeclarationParser.makeDeclarations(declarationsObject);
 		List<Object> checks = makeChecks(checksObject);
 		
 		programs.add(declarations);
@@ -372,14 +372,6 @@ public class AvalanchaRunner
 			result.addAll((List) makeListaExpresionesNoVacia(list.getJSONObject(2)));
 		}
 		return result;
-	}
-
-	private static List<Object> makeDeclarations(JSONObject declarationsObject) {
-		List<Object> declarations = new ArrayList<Object>();
-		
-		System.out.println(declarationsObject);
-		
-		return declarations;
 	}
 	
 }
