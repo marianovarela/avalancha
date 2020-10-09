@@ -139,6 +139,15 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}	
 	
+//	@org.junit.jupiter.api.Test
+//	void test14() throws IOException {		
+//		String content = getContent("src/test/resources/test14.input");
+//		String expected = getContent("src/test/resources/test14.expected");
+//		System.out.println(content);
+//		String astResult = AvalanchaRunner.getAST(content);
+//		assertEquals(expected.replaceAll("\\s",""), astResult);
+//	}	
+	
 	private String getContent(String path) throws FileNotFoundException, IOException {
 		//pat example "src/test/resources/test00.input"
 		BufferedReader reader = new BufferedReader(new FileReader(path));

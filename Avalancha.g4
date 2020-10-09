@@ -14,8 +14,8 @@ IMP:   'imp';
 AND:   'and';
 OR:    'or';
 NOT:    'not';
-TRUE:   ('True ' | 'true');
-FALSE:  ('False' | 'false');
+TRUE:   'true';
+FALSE:  'false';
 
 LPAREN:     '(';
 RPAREN:     ')';

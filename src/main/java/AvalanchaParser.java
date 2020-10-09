@@ -44,8 +44,8 @@ public class AvalanchaParser extends Parser {
 	private static String[] makeLiteralNames() {
 		return new String[] {
 			null, null, null, "'fun'", "'check'", "'imp'", "'and'", "'or'", "'not'", 
-			null, null, "'('", "')'", "','", "'->'", "'_'", "':'", "'?'", "'!'", 
-			"'=='"
+			"'true'", "'false'", "'('", "')'", "','", "'->'", "'_'", "':'", "'?'", 
+			"'!'", "'=='"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();

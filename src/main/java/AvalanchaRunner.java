@@ -286,7 +286,7 @@ public class AvalanchaRunner
 		return result;
 	}
 
-	private static Object makeExpresion(JSONObject formula) {
+	static Object makeExpresion(JSONObject formula) {
 		Object result = null;
 		if(formula.opt("text") != null) {
 			result = formula.get("text");

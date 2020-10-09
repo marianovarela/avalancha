@@ -8,8 +8,8 @@ null
 'and'
 'or'
 'not'
-null
-null
+'true'
+'false'
 '('
 ')'
 ','

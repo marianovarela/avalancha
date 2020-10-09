@@ -38,13 +38,47 @@ public class DeclarationParser {
 	}
 
 	private static List<Object> makeRules(JSONObject jsonObject) {
+//		List<Object> rules = new ArrayList<Object>();
+//		JSONArray ruleArray = jsonObject.getJSONArray("reglas");
+//		if(!ruleArray.isEmpty()) {
+//			
+//		}
+//		
+//		return rules;
+		List<Object> rulesOfRules = new ArrayList<Object>();
 		List<Object> rules = new ArrayList<Object>();
-		JSONArray ruleArray = jsonObject.getJSONArray("reglas");
-		if(!ruleArray.isEmpty()) {
-			
+		JSONArray rulesArray = jsonObject.getJSONArray("reglas");
+		if(!rulesArray.isEmpty()) {
+			rules.add("rule");
+			JSONArray ruleArray = rulesArray.getJSONObject(0).getJSONArray("regla");
+			JSONArray listaPatrones = ruleArray.getJSONObject(0).getJSONArray("listaPatrones");
+			JSONArray expresion = ruleArray.getJSONObject(2).getJSONArray("expresion");
+			if(listaPatrones.isEmpty()) {
+				rules.add(new ArrayList<Object>());
+			} else {
+				
+			}
+			if(expresion.isEmpty()) {
+				rules.add(new ArrayList<Object>());
+			} else {
+				List<Object> first = new ArrayList<Object>();
+				Object value = expresion.getJSONObject(0).get("text");  
+				Character firstChar = ((String) value).charAt(0);
+				if(firstChar.isUpperCase(firstChar)) {
+					first.add("cons");
+					first.add(value);
+					first.add(new ArrayList<Object>());
+				} //else {
+				//	first.add("var");
+//					first.add(expresion.getJSONObject(0).get("text"));
+//				}
+				rules.add(first);
+			}
+			rulesOfRules.add(rules);
 		}
 		
-		return rules;
+		return rulesOfRules;
+		
 	}
 
 	private static List<Object> makePostcondition(JSONObject jsonObject) {
