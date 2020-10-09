@@ -402,6 +402,7 @@ public class AvalanchaParser extends Parser {
 			case FUN:
 			case CHECK:
 			case ARROW:
+			case UNDERSCORE:
 			case QUESTION:
 			case BANG:
 			case LOWERID:
@@ -468,6 +469,7 @@ public class AvalanchaParser extends Parser {
 			case FUN:
 			case CHECK:
 			case ARROW:
+			case UNDERSCORE:
 			case BANG:
 			case LOWERID:
 			case UPPERID:
@@ -529,6 +531,7 @@ public class AvalanchaParser extends Parser {
 			case FUN:
 			case CHECK:
 			case ARROW:
+			case UNDERSCORE:
 			case LOWERID:
 			case UPPERID:
 				enterOuterAlt(_localctx, 1);
@@ -755,6 +758,7 @@ public class AvalanchaParser extends Parser {
 				}
 				break;
 			case ARROW:
+			case UNDERSCORE:
 			case LOWERID:
 			case UPPERID:
 				enterOuterAlt(_localctx, 2);
@@ -935,6 +939,7 @@ public class AvalanchaParser extends Parser {
 				{
 				}
 				break;
+			case UNDERSCORE:
 			case LOWERID:
 			case UPPERID:
 				enterOuterAlt(_localctx, 2);
@@ -959,8 +964,8 @@ public class AvalanchaParser extends Parser {
 	}
 
 	public static class ListaPatronesNoVaciaContext extends ParserRuleContext {
-		public ExpresionContext expresion() {
-			return getRuleContext(ExpresionContext.class,0);
+		public PatronContext patron() {
+			return getRuleContext(PatronContext.class,0);
 		}
 		public TerminalNode COMMA() { return getToken(AvalanchaParser.COMMA, 0); }
 		public ListaPatronesNoVaciaContext listaPatronesNoVacia() {
@@ -991,14 +996,14 @@ public class AvalanchaParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(130);
-				expresion();
+				patron();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(131);
-				expresion();
+				patron();
 				setState(132);
 				match(COMMA);
 				setState(133);
@@ -1625,8 +1630,8 @@ public class AvalanchaParser extends Parser {
 		"\33\3\2\2\2v\177\7\21\2\2w\177\7\26\2\2x\177\7\27\2\2yz\7\27\2\2z{\7\r"+
 		"\2\2{|\5\36\20\2|}\7\16\2\2}\177\3\2\2\2~v\3\2\2\2~w\3\2\2\2~x\3\2\2\2"+
 		"~y\3\2\2\2\177\35\3\2\2\2\u0080\u0083\3\2\2\2\u0081\u0083\5 \21\2\u0082"+
-		"\u0080\3\2\2\2\u0082\u0081\3\2\2\2\u0083\37\3\2\2\2\u0084\u008a\5\"\22"+
-		"\2\u0085\u0086\5\"\22\2\u0086\u0087\7\17\2\2\u0087\u0088\5 \21\2\u0088"+
+		"\u0080\3\2\2\2\u0082\u0081\3\2\2\2\u0083\37\3\2\2\2\u0084\u008a\5\34\17"+
+		"\2\u0085\u0086\5\34\17\2\u0086\u0087\7\17\2\2\u0087\u0088\5 \21\2\u0088"+
 		"\u008a\3\2\2\2\u0089\u0084\3\2\2\2\u0089\u0085\3\2\2\2\u008a!\3\2\2\2"+
 		"\u008b\u0098\7\26\2\2\u008c\u008d\7\26\2\2\u008d\u008e\7\r\2\2\u008e\u008f"+
 		"\5$\23\2\u008f\u0090\7\16\2\2\u0090\u0098\3\2\2\2\u0091\u0098\7\27\2\2"+

@@ -66,7 +66,7 @@ patron : UNDERSCORE | LOWERID | UPPERID | UPPERID LPAREN listaPatrones RPAREN;
 
 listaPatrones: | listaPatronesNoVacia;
 
-listaPatronesNoVacia : expresion | expresion COMMA listaPatronesNoVacia;
+listaPatronesNoVacia : patron | patron COMMA listaPatronesNoVacia;
 
 expresion : LOWERID | LOWERID LPAREN listaExpresiones RPAREN | UPPERID | UPPERID LPAREN listaExpresiones RPAREN;
 
