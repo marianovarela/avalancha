@@ -369,7 +369,7 @@ public class AvalanchaRunner
 		return result;
 	}
 
-	private static Object makeListaExpresionesNoVacia(JSONObject object) {
+	static Object makeListaExpresionesNoVacia(JSONObject object) {
 		List<Object> result = new ArrayList<Object>();
 		JSONArray list = object.getJSONArray("listaExpresionesNoVacia");
 		result.add(extractedVar(list, 0));

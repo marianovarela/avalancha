@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.plaf.ActionMapUIResource;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -69,8 +71,19 @@ public class DeclarationParser {
 					first.add(value);
 					first.add(new ArrayList<Object>());
 				} else {
-					first.add("var");
-					first.add(value);
+					if(expresion.length() == 4) {
+						first.add("app");
+						first.add(value);
+						JSONArray listaExpresiones = expresion.getJSONObject(2).getJSONArray("listaExpresiones");
+						if(listaExpresiones.isEmpty()) {
+							first.add(new ArrayList<Object>());
+						} else {
+							first.add(AvalanchaRunner.makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
+						}
+					}else { // es 1 y representa una variable
+						first.add("var");
+						first.add(value);
+					}
 				}
 				rules.add(first);
 			}
@@ -81,16 +94,24 @@ public class DeclarationParser {
 
 	private static List<Object> makePatron(JSONArray listaPatronesNoVacia, ArrayList<Object> result) {
 		List<Object> rules = new ArrayList<Object>();
-//		List<Object> rule = new ArrayList<Object>();
-		//		JSONArray listaPatrones = ruleArray.getJSONObject(0).getJSONArray("listaPatrones");
-//		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
 		JSONArray patron = listaPatronesNoVacia.getJSONObject(0).getJSONArray("patron");
 		String value = patron.getJSONObject(0).getString("text"); 
 		Character firstChar = value.charAt(0);
 		if(firstChar.isUpperCase(firstChar)) {
 			rules.add("pcons");
 			rules.add(value);
-			rules.add(new ArrayList<Object>());
+			if(patron.length() == 1) {
+				rules.add(new ArrayList<Object>());
+			} else {
+				JSONArray listaPatrones = patron.getJSONObject(2).getJSONArray("listaPatrones");
+				if(listaPatrones.isEmpty()) {
+					result.add(new ArrayList<Object>()); // ver si no es rules.add
+				} else {
+					List<Object> accumulator = new ArrayList<Object>();
+					makeListaPatronesNoVacia(listaPatrones.getJSONObject(0), accumulator);
+					rules.add(accumulator);
+				}
+			}
 		}else {
 			if(value.equals("_")) {
 				rules.add("pwild");
@@ -108,6 +129,28 @@ public class DeclarationParser {
 			return makePatron(listaPatronesNoVacia.getJSONObject(2).getJSONArray("listaPatronesNoVacia"), result);
 		}
 		
+		return result;
+	}
+
+	private static void makeListaPatronesNoVacia(JSONObject jsonObject, List<Object> accumulator) {
+		JSONArray list = jsonObject.getJSONArray("listaPatronesNoVacia");
+		accumulator.add(extracted(list));
+		if(list.length() == 3) {
+			makeListaPatronesNoVacia(list.getJSONObject(2), accumulator);
+		}
+//		return accumulator;
+	}
+
+	private static Object extracted(JSONArray listaPatronesNoVacia) {
+		List<Object> result = new ArrayList<Object>();
+		JSONArray patron = listaPatronesNoVacia.getJSONObject(0).getJSONArray("patron");
+		String value = (String) patron.getJSONObject(0).get("text");
+		if(value.equals("_")) {
+			result.add("pwild");
+		}else {
+			result.add("pvar");
+			result.add(value);
+		}
 		return result;
 	}
 
