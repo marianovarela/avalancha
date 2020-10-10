@@ -56,7 +56,7 @@ public class DeclarationParser {
 			if(listaPatrones.isEmpty()) {
 				rules.add(new ArrayList<Object>());
 			} else {
-				rules.add(makePatron(ruleArray));
+				rules.add(makePatron(listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia")));
 			}
 			if(expresion.isEmpty()) {
 				rules.add(new ArrayList<Object>());
@@ -75,19 +75,26 @@ public class DeclarationParser {
 				rules.add(first);
 			}
 			rulesOfRules.add(rules);
+			makeRule(rulesArray.getJSONObject(1), rulesOfRules);
 		}
 	}
 
-	private static Object makePatron(JSONArray ruleArray) {
+	private static Object makePatron(JSONArray listaPatronesNoVacia) {
 		List<Object> rules = new ArrayList<Object>();
-		List<Object> first = new ArrayList<Object>();
-		List<Object> second = new ArrayList<Object>();
-		JSONArray listaPatrones = ruleArray.getJSONObject(0).getJSONArray("listaPatrones");
-		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
+		List<Object> rule = new ArrayList<Object>();
+		//		JSONArray listaPatrones = ruleArray.getJSONObject(0).getJSONArray("listaPatrones");
+//		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
+		JSONArray patron = listaPatronesNoVacia.getJSONObject(0).getJSONArray("patron");
+		String value = patron.getJSONObject(0).getString("text"); 
+		Character firstChar = value.charAt(0);
+		if(firstChar.isUpperCase(firstChar)) {
+			rule.add("pcons");
+			rule.add(value);
+			rule.add(new ArrayList<Object>());
+		}
 		
-		second.add(AvalanchaRunner.makeExpresion(ruleArray.getJSONObject(2)));
-		rules.add(first);
-		rules.add(second);
+//		second.add(AvalanchaRunner.makeExpresion(listaPatronesNoVacia.getJSONObject(2))); 
+		rules.add(rule);
 		return rules;
 	}
 
@@ -161,7 +168,6 @@ public class DeclarationParser {
 	}
 
 	private static Object getArity(JSONArray listaPatronesNoVacia, List<Object> secondParam) {
-//		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
 		if(listaPatronesNoVacia.length() == 3) {
 			secondParam.add("_");
 			return getArity(listaPatronesNoVacia.getJSONObject(2).getJSONArray("listaPatronesNoVacia"), secondParam);
