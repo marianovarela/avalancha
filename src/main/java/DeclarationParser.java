@@ -69,7 +69,13 @@ public class DeclarationParser {
 				if(firstChar.isUpperCase(firstChar)) {
 					first.add("cons");
 					first.add(value);
-					first.add(new ArrayList<Object>());
+//					first.add(new ArrayList<Object>());
+					if(expresion.length() == 1) {
+						first.add(new ArrayList<Object>());
+					} else {
+						JSONArray listaExpresiones = expresion.getJSONObject(2).getJSONArray("listaExpresiones");
+						first.add(AvalanchaRunner.makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
+					}
 				} else {
 					if(expresion.length() == 4) {
 						first.add("app");
