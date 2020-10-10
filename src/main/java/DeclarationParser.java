@@ -29,7 +29,7 @@ public class DeclarationParser {
 		declaration.add("fun");
 		JSONArray declarationArray = object.getJSONArray("declaracion");
 		declaration.add(declarationArray.getJSONObject(1).get("text"));
-		declaration.add(makeSignature(declarationArray.getJSONObject(2)));
+		declaration.add(makeSignature(declarationArray.getJSONObject(2), declarationArray.getJSONObject(5)));
 		declaration.add(makePrecondition(declarationArray.getJSONObject(3)));
 		declaration.add(makePostcondition(declarationArray.getJSONObject(4)));
 		declaration.add(makeRules(declarationArray.getJSONObject(5)));
@@ -38,14 +38,14 @@ public class DeclarationParser {
 	}
 
 	private static List<Object> makeRules(JSONObject jsonObject) {
-//		List<Object> rules = new ArrayList<Object>();
-//		JSONArray ruleArray = jsonObject.getJSONArray("reglas");
-//		if(!ruleArray.isEmpty()) {
-//			
-//		}
-//		
-//		return rules;
 		List<Object> rulesOfRules = new ArrayList<Object>();
+		makeRule(jsonObject, rulesOfRules);
+		
+		return rulesOfRules;
+		
+	}
+
+	private static void makeRule(JSONObject jsonObject, List<Object> rulesOfRules) {
 		List<Object> rules = new ArrayList<Object>();
 		JSONArray rulesArray = jsonObject.getJSONArray("reglas");
 		if(!rulesArray.isEmpty()) {
@@ -56,7 +56,7 @@ public class DeclarationParser {
 			if(listaPatrones.isEmpty()) {
 				rules.add(new ArrayList<Object>());
 			} else {
-				
+				rules.add(makePatron(ruleArray));
 			}
 			if(expresion.isEmpty()) {
 				rules.add(new ArrayList<Object>());
@@ -76,9 +76,19 @@ public class DeclarationParser {
 			}
 			rulesOfRules.add(rules);
 		}
+	}
+
+	private static Object makePatron(JSONArray ruleArray) {
+		List<Object> rules = new ArrayList<Object>();
+		List<Object> first = new ArrayList<Object>();
+		List<Object> second = new ArrayList<Object>();
+		JSONArray listaPatrones = ruleArray.getJSONObject(0).getJSONArray("listaPatrones");
+		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
 		
-		return rulesOfRules;
-		
+		second.add(AvalanchaRunner.makeExpresion(ruleArray.getJSONObject(2)));
+		rules.add(first);
+		rules.add(second);
+		return rules;
 	}
 
 	private static List<Object> makePostcondition(JSONObject jsonObject) {
@@ -113,13 +123,25 @@ public class DeclarationParser {
 		return precondition;
 	}
 
-	private static List<Object> makeSignature(JSONObject jsonObject) {
+	private static List<Object> makeSignature(JSONObject signatureObject, JSONObject ruleObject) {
 		List<Object> signature = new ArrayList<Object>();
 		signature.add("sig");
-		JSONArray signatureArray = jsonObject.getJSONArray("signatura");
+		JSONArray signatureArray = signatureObject.getJSONArray("signatura");
 		List<Object> secondParam = new ArrayList<Object>();
 		if(signatureArray.isEmpty()) {
-			signature.add(secondParam);
+			JSONArray rules = ruleObject.getJSONArray("reglas");
+			if(rules.isEmpty()) {
+				signature.add(secondParam);
+			}else {
+				JSONArray rule = rules.getJSONObject(0).getJSONArray("regla");
+				JSONArray listaPatrones = rule.getJSONObject(0).getJSONArray("listaPatrones");
+				if(listaPatrones.isEmpty()) {
+					signature.add(secondParam);
+				}else {
+					JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
+					signature.add(getArity(listaPatronesNoVacia, secondParam));
+				}
+			}
 			signature.add("_");
 		} else {
 			JSONArray listaParametros = signatureArray.getJSONObject(1).getJSONArray("listaParametros");
@@ -136,6 +158,17 @@ public class DeclarationParser {
 		}
 		
 		return signature;
+	}
+
+	private static Object getArity(JSONArray listaPatronesNoVacia, List<Object> secondParam) {
+//		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
+		if(listaPatronesNoVacia.length() == 3) {
+			secondParam.add("_");
+			return getArity(listaPatronesNoVacia.getJSONObject(2).getJSONArray("listaPatronesNoVacia"), secondParam);
+		}
+		
+		secondParam.add("_");
+		return secondParam;
 	}
 
 	private static List<Object> makeParams(JSONArray jsonArray, List<Object> accumulator) {
