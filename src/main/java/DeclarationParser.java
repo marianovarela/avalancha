@@ -56,7 +56,7 @@ public class DeclarationParser {
 			if(listaPatrones.isEmpty()) {
 				rules.add(new ArrayList<Object>());
 			} else {
-				rules.add(makePatron(listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia")));
+				rules.add(makePatron(listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia"), new ArrayList<Object>()));
 			}
 			if(expresion.isEmpty()) {
 				rules.add(new ArrayList<Object>());
@@ -68,10 +68,10 @@ public class DeclarationParser {
 					first.add("cons");
 					first.add(value);
 					first.add(new ArrayList<Object>());
-				} //else {
-				//	first.add("var");
-//					first.add(expresion.getJSONObject(0).get("text"));
-//				}
+				} else {
+					first.add("var");
+					first.add(value);
+				}
 				rules.add(first);
 			}
 			rulesOfRules.add(rules);
@@ -79,23 +79,36 @@ public class DeclarationParser {
 		}
 	}
 
-	private static Object makePatron(JSONArray listaPatronesNoVacia) {
+	private static List<Object> makePatron(JSONArray listaPatronesNoVacia, ArrayList<Object> result) {
 		List<Object> rules = new ArrayList<Object>();
-		List<Object> rule = new ArrayList<Object>();
+//		List<Object> rule = new ArrayList<Object>();
 		//		JSONArray listaPatrones = ruleArray.getJSONObject(0).getJSONArray("listaPatrones");
 //		JSONArray listaPatronesNoVacia = listaPatrones.getJSONObject(0).getJSONArray("listaPatronesNoVacia");
 		JSONArray patron = listaPatronesNoVacia.getJSONObject(0).getJSONArray("patron");
 		String value = patron.getJSONObject(0).getString("text"); 
 		Character firstChar = value.charAt(0);
 		if(firstChar.isUpperCase(firstChar)) {
-			rule.add("pcons");
-			rule.add(value);
-			rule.add(new ArrayList<Object>());
+			rules.add("pcons");
+			rules.add(value);
+			rules.add(new ArrayList<Object>());
+		}else {
+			if(value.equals("_")) {
+				rules.add("pwild");
+			} else {
+			rules.add("pvar");
+			rules.add(value);
+			
+			}
 		}
 		
-//		second.add(AvalanchaRunner.makeExpresion(listaPatronesNoVacia.getJSONObject(2))); 
-		rules.add(rule);
-		return rules;
+//		rules.add(rule);
+		result.add(rules);
+		
+		if(listaPatronesNoVacia.length() == 3) {
+			return makePatron(listaPatronesNoVacia.getJSONObject(2).getJSONArray("listaPatronesNoVacia"), result);
+		}
+		
+		return result;
 	}
 
 	private static List<Object> makePostcondition(JSONObject jsonObject) {
