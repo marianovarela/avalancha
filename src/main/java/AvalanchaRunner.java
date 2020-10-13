@@ -15,6 +15,7 @@ public class AvalanchaRunner
 {
 	public static void main( String[] args) throws Exception 
 	{
+		System.out.println("Inserte aqui:");
 		ANTLRInputStream input = new ANTLRInputStream(System.in);
 		AvalanchaLexer lexer = new AvalanchaLexer(input);
 		
