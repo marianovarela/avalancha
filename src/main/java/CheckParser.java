@@ -252,7 +252,6 @@ public class CheckParser {
 		Character firstChar = ((String) value).charAt(0);
 		if(firstChar.isUpperCase(firstChar)) {
 			JSONArray expresion = ((JSONObject) array.get(index)).getJSONArray("expresion");
-			System.out.println(expresion.length());
 			result.add("cons");
 			result.add(value);
 			if(expArray.length() == 1) {

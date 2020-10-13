@@ -1,19 +1,19 @@
-package test;
+package test.java;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
 
 import main.java.AvalanchaRunner;
 
-public class Test {
+public class InputTest {
 
-	@org.junit.jupiter.api.Test
+	@Test
 	void test0() throws IOException {		
 		String content = getContent("src/test/resources/test00.input");
 		String expected = getContent("src/test/resources/test00.expected");
@@ -22,7 +22,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test1() throws IOException {		
 		String content = getContent("src/test/resources/test01.input");
 		String expected = getContent("src/test/resources/test01.expected");
@@ -31,7 +31,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test2() throws IOException {		
 		String content = getContent("src/test/resources/test02.input");
 		String expected = getContent("src/test/resources/test02.expected");
@@ -40,7 +40,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test3() throws IOException {		
 		String content = getContent("src/test/resources/test03.input");
 		String expected = getContent("src/test/resources/test03.expected");
@@ -49,7 +49,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 
-	@org.junit.jupiter.api.Test
+	@Test
 	void test4() throws IOException {		
 		String content = getContent("src/test/resources/test04.input");
 		String expected = getContent("src/test/resources/test04.expected");
@@ -58,7 +58,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test5() throws IOException {		
 		String content = getContent("src/test/resources/test05.input");
 		String expected = getContent("src/test/resources/test05.expected");
@@ -67,7 +67,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test6() throws IOException {		
 		String content = getContent("src/test/resources/test06.input");
 		String expected = getContent("src/test/resources/test06.expected");
@@ -76,7 +76,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test7() throws IOException {		
 		String content = getContent("src/test/resources/test07.input");
 		String expected = getContent("src/test/resources/test07.expected");
@@ -85,7 +85,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test8() throws IOException {		
 		String content = getContent("src/test/resources/test08.input");
 		String expected = getContent("src/test/resources/test08.expected");
@@ -94,7 +94,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test9() throws IOException {		
 		String content = getContent("src/test/resources/test09.input");
 		String expected = getContent("src/test/resources/test09.expected");
@@ -103,7 +103,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test10() throws IOException {		
 		String content = getContent("src/test/resources/test10.input");
 		String expected = getContent("src/test/resources/test10.expected");
@@ -112,7 +112,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test11() throws IOException {		
 		String content = getContent("src/test/resources/test11.input");
 		String expected = getContent("src/test/resources/test11.expected");
@@ -121,7 +121,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}	
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test12() throws IOException {		
 		String content = getContent("src/test/resources/test12.input");
 		String expected = getContent("src/test/resources/test12.expected");
@@ -130,7 +130,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}	
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test13() throws IOException {		
 		String content = getContent("src/test/resources/test13.input");
 		String expected = getContent("src/test/resources/test13.expected");
@@ -139,7 +139,7 @@ public class Test {
 		assertEquals(expected.replaceAll("\\s",""), astResult);
 	}	
 	
-	@org.junit.jupiter.api.Test
+	@Test
 	void test14() throws IOException {		
 		String content = getContent("src/test/resources/test14.input");
 		String expected = getContent("src/test/resources/test14.expected");
