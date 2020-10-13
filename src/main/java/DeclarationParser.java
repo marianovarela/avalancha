@@ -74,7 +74,7 @@ public class DeclarationParser {
 						first.add(new ArrayList<Object>());
 					} else {
 						JSONArray listaExpresiones = expresion.getJSONObject(2).getJSONArray("listaExpresiones");
-						first.add(AvalanchaRunner.makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
+						first.add(CheckParser.makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
 					}
 				} else {
 					if(expresion.length() == 4) {
@@ -84,7 +84,7 @@ public class DeclarationParser {
 						if(listaExpresiones.isEmpty()) {
 							first.add(new ArrayList<Object>());
 						} else {
-							first.add(AvalanchaRunner.makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
+							first.add(CheckParser.makeListaExpresionesNoVacia(listaExpresiones.getJSONObject(0)));
 						}
 					}else { // es 1 y representa una variable
 						first.add("var");
@@ -168,7 +168,7 @@ public class DeclarationParser {
 		if(postconditionArray.isEmpty()) {
 			list.add("true");
 		} else {
-			List<Object> formula = AvalanchaRunner.makeFormula((JSONObject) postconditionArray.get(1));
+			List<Object> formula = CheckParser.makeFormula((JSONObject) postconditionArray.get(1));
 			list.addAll(formula);
 		}
 		postcondition.add(list);
@@ -184,7 +184,7 @@ public class DeclarationParser {
 		if(preconditionArray.isEmpty()) {
 			list.add("true");
 		}else {
-			List<Object> formula = AvalanchaRunner.makeFormula((JSONObject) preconditionArray.get(1));
+			List<Object> formula = CheckParser.makeFormula((JSONObject) preconditionArray.get(1));
 			list.addAll(formula);
 		}
 		precondition.add(list);

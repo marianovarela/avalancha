@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class Examples {
+public class Transformer {
 	private static final Gson PRETTY_PRINT_GSON = new GsonBuilder().setPrettyPrinting().create();
 	  private static final Gson GSON = new Gson();
 
