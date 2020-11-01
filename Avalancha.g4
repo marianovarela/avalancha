@@ -16,6 +16,7 @@ OR:    'or';
 NOT:    'not';
 TRUE:   'true';
 FALSE:  'false';
+PRINT: 'print';
 
 LPAREN:     '(';
 RPAREN:     ')';
@@ -40,7 +41,8 @@ chequeos :
 	
 declaracion : FUN LOWERID signatura precondicion postcondicion reglas;
 
-chequeo : CHECK formula;
+chequeo : CHECK formula
+	| PRINT expresion;
 
 signatura : 
 	| COLON listaParametros ARROW parametro;
