@@ -28,11 +28,25 @@ public class CheckParser {
 
 	private static List<Object> makeCheck(JSONObject object) {
 		List<Object> check = new ArrayList<Object>();
-		check.add("check");
 		JSONArray checkArray = object.getJSONArray("chequeo");
-		List<Object> formula = makeFormula((JSONObject) checkArray.get(1));
-		check.add(formula);
+		JSONObject testObject = ((JSONObject) checkArray.get(1));
+		if(testObject.has("formula")) {
+			check.add("check");
+			List<Object> formula = makeFormula((JSONObject) checkArray.get(1));
+			check.add(formula);
+		}else { // print
+			check.add("print");
+			Object print = makePrint((JSONObject) checkArray.get(1));
+			check.add(print);
+		}
 		return check;
+	}
+
+	private static Object makePrint(JSONObject jsonObject) {
+		Object result = null;
+		result = makeExpresion(jsonObject);
+		
+		return result;
 	}
 
 	static List<Object> makeFormula(JSONObject formulaObject) {
