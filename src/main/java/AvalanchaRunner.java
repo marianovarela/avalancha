@@ -45,7 +45,7 @@ public class AvalanchaRunner
         
 	}
 	
-	public static String getAST(String content) {
+	public static JSONArray getASTToJSON(String content) {
 		CharStream input = new ANTLRInputStream(content);
 		AvalanchaLexer lexer = new AvalanchaLexer(input);
 		
@@ -69,7 +69,11 @@ public class AvalanchaRunner
 	    
 	    System.out.println("*******************************************************");
 	    System.out.println("Programa a imprimir");
-	    String astString = new JSONArray(programs).toString();
+	    return new JSONArray(programs);
+	}
+	
+	public static String getAST(String content) {
+	    String astString = getASTToJSON(content).toString();
 	    System.out.println(astString);
 	    return astString;
 	}
