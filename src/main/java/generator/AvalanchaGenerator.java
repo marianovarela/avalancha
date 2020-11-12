@@ -9,6 +9,7 @@ import org.json.JSONArray;
 
 import main.java.AvalanchaRunner;
 import main.java.generator.util.FileUtil;
+import main.java.generator.util.StringCases;
 
 public class AvalanchaGenerator {
 	
@@ -21,21 +22,9 @@ public class AvalanchaGenerator {
 	
 	public static void main(String[] args) {
 		JSONArray ast = AvalanchaRunner.getASTToJSON(
-//				"fun uno\r\n"
-//				+ "  -> Suc(Zero)\r\n"
-//				+ "\r\n"
-//				+ "fun tres\r\n"
-//				+ "  -> Suc(Suc(uno()))\r\n"
-//				+ "\r\n"
-//				+ "print tres()"
-				
-				//caso 1
-				"print A\n "
-				+ "print B\n"
-				+ "print True\n"
-				+ "print False\n"
-				+
-"print Cons(Zero, Cons(Suc(Zero), Cons(Suc(Suc(Zero)), Nil)))" 
+				StringCases.uno
+//				StringCases.dos
+//				StringCases.tres
 				);
 		
 		String userFunctions = generateDeclarations(ast);
@@ -107,6 +96,18 @@ public class AvalanchaGenerator {
 				+ "    }  \r\n"
 				+ "}"
 				+ "\r\n"
+				+ "bool eqTerms(Term* t1, Term* t2){\r\n"
+				+ "    bool res = true;\r\n"
+				+ "    if(t1->tag == t2->tag && t1->children.size() == t2->children.size()){\r\n"
+				+ "        for (size_t i = 0; i < t1->children.size(); i++)\r\n"
+				+ "        {\r\n"
+				+ "            res = eqTerms(t1->children[i], t2->children[i]);\r\n"
+				+ "        }\r\n"
+				+ "        return res;      \r\n"
+				+ "    } else {\r\n"
+				+ "        return false;\r\n"
+				+ "    }\r\n"
+				+ "}\r\n"
 				+ "void printTerm(Term* t) {\r\n"
 				+ "    for (auto it = constructorMap.begin(); it != constructorMap.end(); ++it){ \r\n"
 				+ "        if (it->second == t->tag){\r\n"
@@ -169,17 +170,19 @@ public class AvalanchaGenerator {
 				JSONArray pre = array.getJSONArray(3);
 				JSONArray post = array.getJSONArray(4);
 				JSONArray rules = array.getJSONArray(5);
-				String signatureProcessed = makeSignature(signature);
+				int arity = getArity(signature);
+				String signatureProcessed = makeSignature(arity);
+				String params = makeParams(arity);
 				result += "void pre_" + varFun + "(" + signatureProcessed + ") {\r\n"
 						+ "}\r\n"
 						+ "void post_" + varFun + "(" + signatureProcessed + (signatureProcessed.isEmpty() ? "" : ", ") + "Term* res) {\r\n"
 						+ "}\r\n"
 						+ "Term* f_" + varFun + "(" + signatureProcessed + ") {\r\n" 
-						+ "pre_" + varFun + "(" + signatureProcessed + ");\r\n";
-				result += makeRules(rules);		
-				result += "post_" + varFun + "(" + signatureProcessed + (signatureProcessed.isEmpty() ? "" : ", ") + "res);\r\n"
-						+ "return res;\r\n"
-				+ "}\r\n";
+						+ "pre_" + varFun + "(" + params + ");\r\n";
+				String postString = "post_" + varFun + "(" + params + (signatureProcessed.isEmpty() ? "" : ", ") + "res);\r\n";
+				result += makeRules(rules, arity, params, postString);		
+//			    result += postString + "}\r\n";
+//			    		+ "return res;\r\n\"";
 				
 			}
 		}
@@ -188,21 +191,75 @@ public class AvalanchaGenerator {
 		
 	}
 
-	private static String makeRules(JSONArray rules) {
+	private static int getArity(JSONArray signature) {
+		return signature.getJSONArray(1).length();
+	}
+	
+	private static String makeParams(int arity) {
+		String result = "";
+		boolean isFirst = true;
+		
+		for (int i = 0; i < arity; i++) {
+			if(isFirst) {
+				result += "x_" + i;
+				isFirst = false;
+			} else {
+				result += ", x_" + i;
+			}
+		}
+		
+		return result;
+	}
+
+	private static String makeRules(JSONArray rules, int arity, String params, String postString) {
 		String result = "";
 		if(!rules.isEmpty()) {
-			JSONArray rule = rules.getJSONArray(0);
-			String var = "c_" + consCount;
-			result += getEqualExpr(rule.getJSONArray(2), false);
-			result += "Term* res = " + var + ";\r\n";
+			if(arity == 0) {
+				JSONArray rule = rules.getJSONArray(0);
+				String var = "c_" + consCount;
+				result += getEqualExpr(rule.getJSONArray(2), false);
+				result += "Term* res = " + var + ";\r\n"
+						+ "return res;}\r\n";
+			} else if(arity > 0){
+				for (int i = 0; i < rules.length(); i++) {
+					JSONArray rule = rules.getJSONArray(i);
+					boolean isFirst = true;
+					String var = "c_" + (consCount);
+					result += compileCons(rule.getJSONArray(1).getJSONArray(0), null);
+					result += "if("; 
+					for (int j = 0; j < arity; j++) {
+						if(isFirst) {
+							isFirst = false;
+							result += "eqTerms(x_" + j + "," + var +  ")";
+						} else {
+							result += ", eqTerms(x_" + j + "," + var +  ")";
+						}
+					} 
+					result += ") {\r\n";
+					String varRes = "c_" + consCount;
+					result += getEqualExpr(rule.getJSONArray(2), false);
+					result += "Term* res = " + varRes + ";\r\n"
+							+ postString 
+							+ "return res;\r\n"
+							+ "}\r\n";
+				}
+				result += "}\r\n";
+			}
 		}
 		return result;
 	}
 
-	private static String makeSignature(JSONArray signature) {
+	private static String makeSignature(int arity) {
 		String result = "";
-		if(!signature.getJSONArray(1).isEmpty()) {
-			
+		boolean isFirst = true;
+		
+		for (int i = 0; i < arity; i++) {
+			if(isFirst) {
+				result += "Term* x_" + i;
+				isFirst = false;
+			} else {
+				result += ", Term* x_" + i;
+			}
 		}
 		
 		return result;
@@ -256,10 +313,17 @@ public class AvalanchaGenerator {
 				}
 			}else {
 				System.out.println("es funcion");
-				String parameters = makeFunParameters(first.getJSONArray(2));
-				if(canPrint) {
+				String var = "c_" + (consCount);
+				// es un solo parametro por eso 0
+				if(first.getJSONArray(2).isEmpty()) {
+					String parameters = makeFunParameters(first.getJSONArray(2));
 					result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + parameters + "));\r\n";
-				}
+				}else {
+					result += compileCons(first.getJSONArray(2).getJSONArray(0), null);
+					if(canPrint) {
+						result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + var + "));\r\n";
+					}
+				}	
 			}
 		}
 		
