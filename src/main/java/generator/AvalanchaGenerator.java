@@ -3,7 +3,9 @@ package main.java.generator;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 
@@ -25,6 +27,7 @@ public class AvalanchaGenerator {
 				StringCases.uno
 //				StringCases.dos
 //				StringCases.tres
+//				StringCases.cuatro
 				);
 		
 		String userFunctions = generateDeclarations(ast);
@@ -224,15 +227,19 @@ public class AvalanchaGenerator {
 				for (int i = 0; i < rules.length(); i++) {
 					JSONArray rule = rules.getJSONArray(i);
 					boolean isFirst = true;
-					String var = "c_" + (consCount);
-					result += compileCons(rule.getJSONArray(1).getJSONArray(0), null);
+					List<String> constructors = new ArrayList<String>();
+					for (int j = 0; j < rule.getJSONArray(1).length(); j++) {
+						String var = "c_" + (consCount);
+						constructors.add(var);
+						result += compileCons(rule.getJSONArray(1).getJSONArray(j), null);
+					}
 					result += "if("; 
 					for (int j = 0; j < arity; j++) {
 						if(isFirst) {
 							isFirst = false;
-							result += "eqTerms(x_" + j + "," + var +  ")";
+							result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
 						} else {
-							result += ", eqTerms(x_" + j + "," + var +  ")";
+							result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
 						}
 					} 
 					result += ") {\r\n";
@@ -313,13 +320,24 @@ public class AvalanchaGenerator {
 				}
 			}else {
 				System.out.println("es funcion");
-				String var = "c_" + (consCount);
 				// es un solo parametro por eso 0
 				if(first.getJSONArray(2).isEmpty()) {
 					String parameters = makeFunParameters(first.getJSONArray(2));
 					result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + parameters + "));\r\n";
 				}else {
-					result += compileCons(first.getJSONArray(2).getJSONArray(0), null);
+					String var = ""; //"c_" + (consCount);
+					JSONArray params = first.getJSONArray(2);
+					boolean isFirst = true;
+					for (int i = 0; i < params.length(); i++) {
+						if(isFirst) {
+							isFirst = false;
+							var += "c_" + (consCount);
+						}else {
+							var += ", c_" + (consCount);
+						}
+						result += compileCons(params.getJSONArray(i), null);
+						
+					}
 					if(canPrint) {
 						result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + var + "));\r\n";
 					}
@@ -367,8 +385,21 @@ public class AvalanchaGenerator {
 //				+ "    printTerm(c_" + consCount + ");\r\n"
 //				+ "    decref(c_" + consCount + ");";
 		}else {
-//			result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "(" + parameters + "));\r\n";
-			result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "("  + ");\r\n";
+			String var = "";
+			JSONArray params = first.getJSONArray(2);
+			boolean isFirst = true;
+			for (int i = 0; i < params.length(); i++) {
+				if(isFirst) {
+					isFirst = false;
+					var += "c_" + (consCount);
+				}else {
+					var += ", c_" + (consCount);
+				}
+				result += compileCons(params.getJSONArray(i), null);
+				
+			}
+			result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "(" + var + ");\r\n";
+//			result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "("  + ");\r\n";
 		}
 		String var = "c_" + consCount;
 		if(parentVar != null) {
