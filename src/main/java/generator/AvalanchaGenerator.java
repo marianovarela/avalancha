@@ -358,17 +358,36 @@ public class AvalanchaGenerator {
 
 	private static String compileRecursiveCons(String var, JSONArray recursive) {
 		String result = "";
+		
+//		JSONArray item = recursive.getJSONArray(0);
 		JSONArray item = recursive.getJSONArray(0);
 		Character firstChar = item.getString(1).charAt(0);
+		//me fijo si son construcciones
 		if(firstChar.isUpperCase(firstChar)) {
-			result += compileCons(item, var, null);
-			
-			if(recursive.length() > 1) {
-				JSONArray recursiveArray = recursive.getJSONArray(1);
-				result += compileCons(recursiveArray, var, null);
+				result += compileCons(item, var, null);
+				
+				if(recursive.length() > 1) {
+					JSONArray recursiveArray = recursive.getJSONArray(1);
+					result += compileCons(recursiveArray, var, null);
+				}
+		}
+		else {
+			for (int i = 0; i < recursive.length(); i++) {
+				
+				item = recursive.getJSONArray(i);
+				firstChar = item.getString(1).charAt(0);
+				if(firstChar.isUpperCase(firstChar)) {
+					result += compileCons(item, var, null);
+					
+					if(recursive.length() > 1) {
+						JSONArray recursiveArray = recursive.getJSONArray(1);
+						result += compileCons(recursiveArray, var, null);
+					}
+				} else {
+					result += compileFun(item, var, null);
+				}
+				consCount++;
 			}
-		} else {
-			result += compileFun(item, var, null);
 		}
 		
 		return result;
@@ -431,33 +450,8 @@ public class AvalanchaGenerator {
 				result += compileRecursiveCons(var, first.getJSONArray(2));
 			}
 		}else {
-//			result += compileFun(first.getJSONArray(0), parentVar);
 			result += compileFun(first, parentVar, parentTerm);
-			/*String var = "";
-			JSONArray params = first.getJSONArray(2);
-			boolean isFirst = true;
-			for (int i = 0; i < params.length(); i++) {
-				if(isFirst) {
-					isFirst = false;
-					var += "c_" + (consCount);
-				}else {
-					var += ", c_" + (consCount);
-				}
-				result += compileCons(params.getJSONArray(i), null);
-				
-			}
-			result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "(" + var + ");\r\n";
-//			result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "("  + ");\r\n";*/
 		}
-		/*String var = "c_" + consCount;
-		if(parentVar != null) {
-			result += parentVar + "->children.push_back(c_" + consCount + ");\r\n";
-		}
-		consCount++;
-		if(!first.getJSONArray(2).isEmpty()) {
-			result += compileRecursiveCons(var, first.getJSONArray(2));
-		}*/
-//		}
 		
 		return result;
 	}
