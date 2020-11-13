@@ -67,11 +67,40 @@ public class StringCases {
 	public static String cinco = "fun sucsuc\r\n"
 			+ "  x -> Suc(Suc(x))\r\n"
 			+ "\r\n"
-			+ "fun if\r\n"
-			+ "  True,  x, _ -> x\r\n"
-			+ "  False, _, y -> y\r\n"
-			+ "\r\n"
+//			+ "fun if\r\n"
+//			+ "  True,  x, _ -> x\r\n"
+//			+ "  False, _, y -> y\r\n"
+//			+ "\r\n"
 			+ "print sucsuc(sucsuc(Zero))\r\n"
-			+ "print if(True, A, B)\r\n"
-			+ "print if(False, A, B)"; 
+//			+ "print if(True, A, B)\r\n"
+//			+ "print if(False, A, B)"
+			; 
+	
+	public static String ocho = 
+			"fun foo\r\n"
+			+ "  ? True\r\n"
+			+ "  ! True\r\n"
+			+ "  -> A\r\n"
+			+ "\r\n"
+			+ "print foo()\r\n"
+			;
+	
+	public static String nueve =
+			"fun foo\r\n"
+			+ "  ? False\r\n"
+			+ "  ! True\r\n"
+			+ "  -> A\r\n"
+			+ "\r\n"
+			+ "print foo()\r\n"
+			;
+	
+	public static String diez =
+			"\r\n"
+			+ "fun foo\r\n"
+			+ "  ? True\r\n"
+			+ "  ! False\r\n"
+			+ "  -> A\r\n"
+			+ "\r\n"
+			+ "print foo()\r\n"
+			;
 }

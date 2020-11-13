@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+
+import javax.lang.model.element.VariableElement;
 
 import org.json.JSONArray;
 
@@ -24,10 +28,14 @@ public class AvalanchaGenerator {
 	
 	public static void main(String[] args) {
 		JSONArray ast = AvalanchaRunner.getASTToJSON(
-//				StringCases.uno
-//				StringCases.dos
-//				StringCases.tres
-				StringCases.cuatro				
+//				StringCases.uno     // ok
+//				StringCases.dos     // ok
+//				StringCases.tres    // ok
+//				StringCases.cuatro	// ok
+				StringCases.cinco
+//				StringCases.ocho    // ok 
+//				StringCases.nueve   // ok
+//				StringCases.diez    // ok
 				);
 		
 		String userFunctions = generateDeclarations(ast);
@@ -155,6 +163,15 @@ public class AvalanchaGenerator {
 		
 		FileUtil.generateFile("01", program);
 	}
+	
+	private static String getNameFunction(Integer varFun) {
+	    for (Entry<String, Integer> entry : funMap.entrySet()) {
+	        if (Objects.equals(varFun, entry.getValue())) {
+	            return entry.getKey();
+	        }
+	    }
+	    return null;
+	}
 
 	private static String generateDeclarations(JSONArray ast) {
 		String result = "";
@@ -177,8 +194,10 @@ public class AvalanchaGenerator {
 				String signatureProcessed = makeSignature(arity);
 				String params = makeParams(arity);
 				result += "void pre_" + varFun + "(" + signatureProcessed + ") {\r\n"
+						+ makePreCondition(pre, varFun)
 						+ "}\r\n"
 						+ "void post_" + varFun + "(" + signatureProcessed + (signatureProcessed.isEmpty() ? "" : ", ") + "Term* res) {\r\n"
+						+ makePostCondition(post, varFun)
 						+ "}\r\n"
 						+ "Term* f_" + varFun + "(" + signatureProcessed + ") {\r\n" 
 						+ "pre_" + varFun + "(" + params + ");\r\n";
@@ -192,6 +211,56 @@ public class AvalanchaGenerator {
 		
 		return result;
 		
+	}
+
+	private static String makePreCondition(JSONArray pre, Integer varFun) {
+		String result = "";
+		
+		JSONArray ruleArray = pre.getJSONArray(1);
+		if(ruleArray.length() >  1) { // solo contiene true 
+			String rule = "";
+			rule += "eqTerms(" ;
+			String var1 = "c_" + (consCount);
+			rule += var1 + ", "; 
+			result += compileCons(ruleArray.getJSONArray(1), null, null);
+			String var2 = "c_" + (consCount);
+			rule += var2 + ")"; 
+			result += compileCons(ruleArray.getJSONArray(2), null, null);
+			
+			result += "if (!("
+					+ rule
+					+ ")) {\r\n"
+					+ "cout << \"pre(" + getNameFunction(varFun) + ") failed\";\r\n"
+					+ "exit(1);\r\n"
+					+ "}\r\n";
+		}
+		
+		return result;
+	}
+	
+	private static String makePostCondition(JSONArray post, Integer varFun) {
+		String result = "";
+		
+		JSONArray ruleArray = post.getJSONArray(1);
+		if(ruleArray.length() >  1) { // solo contiene true
+			String rule = "";
+			rule += "eqTerms(" ;
+			String var1 = "c_" + (consCount);
+			rule += var1 + ", "; 
+			result += compileCons(ruleArray.getJSONArray(1), null, null);
+			String var2 = "c_" + (consCount);
+			rule += var2 + ")"; 
+			result += compileCons(ruleArray.getJSONArray(2), null, null);
+	
+			result += "if (!("
+					+ rule
+					+ ")) {\r\n"
+					+ "cout << \"post(" + getNameFunction(varFun) + ") failed\";\r\n"
+					+ "exit(1);\r\n"
+					+ "}\r\n";
+		} 
+		
+		return result;
 	}
 
 	private static int getArity(JSONArray signature) {
@@ -222,6 +291,7 @@ public class AvalanchaGenerator {
 				String var = "c_" + consCount;
 				result += getEqualExpr(rule.getJSONArray(2), false);
 				result += "Term* res = " + var + ";\r\n"
+						+ postString
 						+ "return res;}\r\n";
 			} else if(arity > 0){
 				for (int i = 0; i < rules.length(); i++) {
