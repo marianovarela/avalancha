@@ -64,13 +64,14 @@ public class StringCases {
 			+ "\r\n"
 			+ "";
 	
-	public static String cinco = "fun sucsuc\r\n"
+	public static String cinco = ""
+			+ "fun sucsuc\r\n"
 			+ "  x -> Suc(Suc(x))\r\n"
-			+ "\r\n"
+//			+ "\r\n"
 //			+ "fun if\r\n"
 //			+ "  True,  x, _ -> x\r\n"
 //			+ "  False, _, y -> y\r\n"
-//			+ "\r\n"
+			+ "\r\n"
 			+ "print sucsuc(sucsuc(Zero))\r\n"
 //			+ "print if(True, A, B)\r\n"
 //			+ "print if(False, A, B)"

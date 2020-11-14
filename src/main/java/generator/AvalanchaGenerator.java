@@ -296,7 +296,7 @@ public class AvalanchaGenerator {
 					boolean isFirst = true;
 					List<String> constructors = new ArrayList<String>();
 					for (int j = 0; j < rule.getJSONArray(1).length(); j++) {
-						if(!rule.getJSONArray(1).getJSONArray(j).getString(0).equals("pvar")) { // no es pvar
+						if(rule.getJSONArray(1).getJSONArray(j).getString(0).equals("pcons")) { // no es pvar
 							String var = "c_" + (consCount);
 							constructors.add(var);
 							result += compileCons(rule.getJSONArray(1).getJSONArray(j), null, null);
@@ -305,16 +305,32 @@ public class AvalanchaGenerator {
 					if(constructors.size() > 0) {// hay que hacer pattern matchear
 						result += "if("; 
 						for (int j = 0; j < arity; j++) {
-							if(isFirst) {
-								isFirst = false;
-								result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+							//busco si existe el constructor, si no existe significa que la variable fue pvar o pwild
+							String constructor = findConstructor(j, constructors); 
+							if(constructor != null) {
+								if(isFirst) {
+									isFirst = false;
+									result += "eqTerms(x_" + j + "," + constructor +  ")";
+								} else {
+									result += " && eqTerms(x_" + j + "," + constructor +  ")";
+								}
 							} else {
-								result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+								if(isFirst) {
+									isFirst = false;
+									result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+								} else {
+									result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+								}
 							}
 						} 
 						result += ") {\r\n";
-					}	
-					String varRes = "c_" + consCount;
+					}
+					String varRes = null;
+					if(rule.getJSONArray(2).getString(0).equals("var")) {
+						varRes = getVar(rule.getJSONArray(2).getString(1), rule.getJSONArray(1));
+					} else {
+						varRes = "c_" + consCount;
+					}
 					result += getEqualExpr(rule.getJSONArray(1), rule.getJSONArray(2), false);
 					result += "Term* res = " + varRes + ";\r\n"
 							+ postString 
@@ -327,6 +343,15 @@ public class AvalanchaGenerator {
 			}
 		}
 		return result;
+	}
+
+	private static String findConstructor(int index, List<String> constructors) {
+		for(String constructor : constructors) {
+			if(constructor.equals("c_" + index)) {
+				return constructor;
+			}
+		}
+		return null;
 	}
 
 	private static String makeSignature(int arity) {
@@ -481,9 +506,11 @@ public class AvalanchaGenerator {
 		String result = null;
 		
 		for (int i = 0; i < recursive.length(); i++) {
-			if(var.equals(recursive.getJSONArray(i).getString(1))) {
-				return "x_" + i;
-			}
+			if(recursive.getJSONArray(i).length() > 1) { // significa que no es pwild
+				if(var.equals(recursive.getJSONArray(i).getString(1))) {
+					return "x_" + i;
+				}
+			}	
 		}
 		
 		return result; 
@@ -526,6 +553,9 @@ public class AvalanchaGenerator {
 ////			result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + parameters + "));\r\n";
 //			result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" "));\r\n";
 //		}else {
+		if(first.length() == 1) {
+			return result;
+		}
 		Character firstChar = first.getString(1).charAt(0);
 		if(firstChar.isUpperCase(firstChar)) {
 			result += "addConstructor(\"" + first.getString(1) + "\");\r\n";
