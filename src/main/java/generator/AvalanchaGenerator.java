@@ -27,9 +27,9 @@ public class AvalanchaGenerator {
 //				StringCases.dos     // ok
 //				StringCases.tres    // ok
 //				StringCases.cuatro	// ok
-				StringCases.cinco
+//				StringCases.cinco   // ok
 //				StringCases.ocho    // ok 
-//				StringCases.nueve   // ok
+				StringCases.nueve   // ok
 //				StringCases.diez    // ok
 				);
 		
@@ -306,20 +306,27 @@ public class AvalanchaGenerator {
 						result += "if("; 
 						for (int j = 0; j < arity; j++) {
 							//busco si existe el constructor, si no existe significa que la variable fue pvar o pwild
-							String constructor = findConstructor(j, constructors); 
-							if(constructor != null) {
-								if(isFirst) {
-									isFirst = false;
-									result += "eqTerms(x_" + j + "," + constructor +  ")";
+							String constructor = findConstructor(j, constructors);
+							if(j < constructors.size()) { //ya chequee todo
+								
+								if(constructor != null) {
+									if(isFirst) {
+										isFirst = false;
+										result += "eqTerms(x_" + j + "," + constructor +  ")";
+									} else {
+										result += " && eqTerms(x_" + j + "," + constructor +  ")";
+									}
 								} else {
-									result += " && eqTerms(x_" + j + "," + constructor +  ")";
-								}
-							} else {
-								if(isFirst) {
-									isFirst = false;
-									result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
-								} else {
-									result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+									//comparo que no sean ni pvar ni pwild
+									String type = rule.getJSONArray(1).getJSONArray(j).getString(0);
+									if(type.equals("pcons")) {
+										if(isFirst) {
+											isFirst = false;
+											result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+										} else {
+											result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+										}
+									}
 								}
 							}
 						} 
@@ -445,6 +452,7 @@ public class AvalanchaGenerator {
 						}else {
 							result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + var + "));\r\n";
 						}
+						consCount++;
 					}
 				}	
 			}
