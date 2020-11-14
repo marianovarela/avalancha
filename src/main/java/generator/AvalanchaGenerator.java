@@ -1,15 +1,10 @@
 package main.java.generator;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
-
-import javax.lang.model.element.VariableElement;
 
 import org.json.JSONArray;
 
@@ -286,10 +281,12 @@ public class AvalanchaGenerator {
 	private static String makeRules(JSONArray rules, int arity, String params, String postString) {
 		String result = "";
 		if(!rules.isEmpty()) {
-			if(arity == 0) {
+			if(arity == 0 ){
+//				if(arity == 0 || arity == 1) {
 				JSONArray rule = rules.getJSONArray(0);
 				String var = "c_" + consCount;
-				result += getEqualExpr(rule.getJSONArray(2), false);
+				JSONArray patterns = rule.getJSONArray(2);
+				result += getEqualExpr(patterns, rule.getJSONArray(2), false);
 				result += "Term* res = " + var + ";\r\n"
 						+ postString
 						+ "return res;}\r\n";
@@ -299,26 +296,32 @@ public class AvalanchaGenerator {
 					boolean isFirst = true;
 					List<String> constructors = new ArrayList<String>();
 					for (int j = 0; j < rule.getJSONArray(1).length(); j++) {
-						String var = "c_" + (consCount);
-						constructors.add(var);
-						result += compileCons(rule.getJSONArray(1).getJSONArray(j), null, null);
-					}
-					result += "if("; 
-					for (int j = 0; j < arity; j++) {
-						if(isFirst) {
-							isFirst = false;
-							result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
-						} else {
-							result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+						if(!rule.getJSONArray(1).getJSONArray(j).getString(0).equals("pvar")) { // no es pvar
+							String var = "c_" + (consCount);
+							constructors.add(var);
+							result += compileCons(rule.getJSONArray(1).getJSONArray(j), null, null);
 						}
-					} 
-					result += ") {\r\n";
+					}
+					if(constructors.size() > 0) {// hay que hacer pattern matchear
+						result += "if("; 
+						for (int j = 0; j < arity; j++) {
+							if(isFirst) {
+								isFirst = false;
+								result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+							} else {
+								result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+							}
+						} 
+						result += ") {\r\n";
+					}	
 					String varRes = "c_" + consCount;
-					result += getEqualExpr(rule.getJSONArray(2), false);
+					result += getEqualExpr(rule.getJSONArray(1), rule.getJSONArray(2), false);
 					result += "Term* res = " + varRes + ";\r\n"
 							+ postString 
-							+ "return res;\r\n"
-							+ "}\r\n";
+							+ "return res;\r\n";
+					if(constructors.size() > 0) {// hay que hacer pattern matchear	
+							result += "}\r\n";
+					}			
 				}
 				result += "}\r\n";
 			}
@@ -357,7 +360,7 @@ public class AvalanchaGenerator {
 					String op = expr.getString(0);
 					if(op.equals("equal")) {
 						JSONArray first = expr.getJSONArray(1);
-						result += getEqualExpr(first, true);
+						result += getEqualExpr(null, first, true);
 					}
 				} else {
 					System.out.println("es otra cosa");
@@ -369,7 +372,7 @@ public class AvalanchaGenerator {
 		
 	}
 
-	private static String getEqualExpr(JSONArray first, boolean canPrint) {
+	private static String getEqualExpr(JSONArray patterns, JSONArray first, boolean canPrint) {
 		String result = "";
 //		JSONArray first = expr.getJSONArray(1);
 		if(first.getString(0).equals("cons")) {
@@ -409,7 +412,14 @@ public class AvalanchaGenerator {
 						
 					}
 					if(canPrint) {
-						result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + var + "));\r\n";
+						if(first.getJSONArray(2).getJSONArray(0).getString(0).equals("app")) {
+							String child = "c_" + consCount;
+							consCount++;
+							result += "Term* c_" + consCount + " = f_" + funMap.get(first.getString(1)) + "(" + child + ");\r\n";
+							result += "printTerm(c_" + consCount + ");\r\n";
+						}else {
+							result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + var + "));\r\n";
+						}
 					}
 				}	
 			}
@@ -429,7 +439,6 @@ public class AvalanchaGenerator {
 	private static String compileRecursiveCons(String var, JSONArray recursive) {
 		String result = "";
 		
-//		JSONArray item = recursive.getJSONArray(0);
 		JSONArray item = recursive.getJSONArray(0);
 		Character firstChar = item.getString(1).charAt(0);
 		//me fijo si son construcciones
@@ -454,7 +463,12 @@ public class AvalanchaGenerator {
 						result += compileCons(recursiveArray, var, null);
 					}
 				} else {
-					result += compileFun(item, var, null);
+					if(item.getString(0).equals("var")) {
+						System.out.println("es p var");
+						result += var + "->children.push_back(" + getVar(item.getString(1), recursive) + ");\r\n";
+					}else {
+						result += compileFun(item, var, null);
+					}
 				}
 				consCount++;
 			}
@@ -463,10 +477,21 @@ public class AvalanchaGenerator {
 		return result;
 	}
 
+	private static String getVar(String var, JSONArray recursive) {
+		String result = null;
+		
+		for (int i = 0; i < recursive.length(); i++) {
+			if(var.equals(recursive.getJSONArray(i).getString(1))) {
+				return "x_" + i;
+			}
+		}
+		
+		return result; 
+	}
+
 	private static String compileFun(JSONArray item, String parentVar, String parentTerm) {
 		String result = "";
 		
-//		JSONArray item = recursive.getJSONArray(0);
 		String var = "";
 		JSONArray params = item.getJSONArray(2);
 		boolean isFirst = true;
@@ -520,7 +545,12 @@ public class AvalanchaGenerator {
 				result += compileRecursiveCons(var, first.getJSONArray(2));
 			}
 		}else {
-			result += compileFun(first, parentVar, parentTerm);
+			if(first.getString(0).equals("pvar")) {
+//				System.out.println("es p var");
+//				result += "x";
+			}else {
+				result += compileFun(first, parentVar, parentTerm);
+			}
 		}
 		
 		return result;
