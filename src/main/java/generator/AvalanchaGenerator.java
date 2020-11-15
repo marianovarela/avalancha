@@ -28,11 +28,24 @@ public class AvalanchaGenerator {
 //				StringCases.tres    // ok
 //				StringCases.cuatro	// ok
 //				StringCases.cinco   // ok
+				StringCases.seis
 //				StringCases.ocho    // ok 
-				StringCases.nueve   // ok
+//				StringCases.nueve   // ok
 //				StringCases.diez    // ok
+//				"fun sum\r\n"
+//				+ "  Zero   , y -> y\r\n"
+//				+ "  Suc(x) , y -> Suc(sum(x, y))\r\n"
+//				+ "fun mul\r\n"
+//				+ "  Zero   , _ -> Zero\r\n"
+//////				+ "print sum(Suc(Suc(Zero)), Zero)\r\n"
+////				+ "print mul(Zero, Zero)\r\n"
+//				+ "print mul(Suc(Zero), Zero)\r\n"
 				);
 		
+		getCode(ast);
+	}
+
+	private static void getCode(JSONArray ast) {
 		String userFunctions = generateDeclarations(ast);
 		String body = generateChecks(ast);//TODO llamar una sola vez y separar declaraciones de chequeos
 		
@@ -103,16 +116,17 @@ public class AvalanchaGenerator {
 				+ "}"
 				+ "\r\n"
 				+ "bool eqTerms(Term* t1, Term* t2){\r\n"
-				+ "    bool res = true;\r\n"
-				+ "    if(t1->tag == t2->tag && t1->children.size() == t2->children.size()){\r\n"
-				+ "        for (size_t i = 0; i < t1->children.size(); i++)\r\n"
-				+ "        {\r\n"
-				+ "            res = eqTerms(t1->children[i], t2->children[i]);\r\n"
-				+ "        }\r\n"
-				+ "        return res;      \r\n"
-				+ "    } else {\r\n"
-				+ "        return false;\r\n"
-				+ "    }\r\n"
+				+ "return t1->tag == t2->tag;\r\n"
+//				+ "    bool res = true;\r\n"
+//				+ "    if(t1->tag == t2->tag && t1->children.size() == t2->children.size()){\r\n"
+//				+ "        for (size_t i = 0; i < t1->children.size(); i++)\r\n"
+//				+ "        {\r\n"
+//				+ "            res = eqTerms(t1->children[i], t2->children[i]);\r\n"
+//				+ "        }\r\n"
+//				+ "        return res;      \r\n"
+//				+ "    } else {\r\n"
+//				+ "        return false;\r\n"
+//				+ "    }\r\n"
 				+ "}\r\n"
 				+ "void printTerm(Term* t) {\r\n"
 				+ "    for (auto it = constructorMap.begin(); it != constructorMap.end(); ++it){ \r\n"
@@ -217,10 +231,10 @@ public class AvalanchaGenerator {
 			rule += "eqTerms(" ;
 			String var1 = "c_" + (consCount);
 			rule += var1 + ", "; 
-			result += compileCons(ruleArray.getJSONArray(1), null, null);
+			result += compileCons(null, ruleArray.getJSONArray(1), null, null);
 			String var2 = "c_" + (consCount);
 			rule += var2 + ")"; 
-			result += compileCons(ruleArray.getJSONArray(2), null, null);
+			result += compileCons(null, ruleArray.getJSONArray(2), null, null);
 			
 			result += "if (!("
 					+ rule
@@ -242,10 +256,10 @@ public class AvalanchaGenerator {
 			rule += "eqTerms(" ;
 			String var1 = "c_" + (consCount);
 			rule += var1 + ", "; 
-			result += compileCons(ruleArray.getJSONArray(1), null, null);
+			result += compileCons(null, ruleArray.getJSONArray(1), null, null);
 			String var2 = "c_" + (consCount);
 			rule += var2 + ")"; 
-			result += compileCons(ruleArray.getJSONArray(2), null, null);
+			result += compileCons(null, ruleArray.getJSONArray(2), null, null);
 	
 			result += "if (!("
 					+ rule
@@ -299,7 +313,7 @@ public class AvalanchaGenerator {
 						if(rule.getJSONArray(1).getJSONArray(j).getString(0).equals("pcons")) { // no es pvar
 							String var = "c_" + (consCount);
 							constructors.add(var);
-							result += compileCons(rule.getJSONArray(1).getJSONArray(j), null, null);
+							result += compileCons(null , rule.getJSONArray(1).getJSONArray(j), null, null);
 						}
 					}
 					if(constructors.size() > 0) {// hay que hacer pattern matchear
@@ -334,7 +348,7 @@ public class AvalanchaGenerator {
 					}
 					String varRes = null;
 					if(rule.getJSONArray(2).getString(0).equals("var")) {
-						varRes = getVar(rule.getJSONArray(2).getString(1), rule.getJSONArray(1));
+						varRes = getVar(rule.getJSONArray(1), rule.getJSONArray(2).getString(1), rule.getJSONArray(1));
 					} else {
 						varRes = "c_" + consCount;
 					}
@@ -409,7 +423,7 @@ public class AvalanchaGenerator {
 //		JSONArray first = expr.getJSONArray(1);
 		if(first.getString(0).equals("cons")) {
 			String var = "c_" + (consCount);
-			result += compileCons(first, null, null);
+			result += compileCons(patterns, first, null, null);
 			if(canPrint) {
 				result += "printTerm(" + var + ");\r\n\r\n";
 			}
@@ -418,7 +432,7 @@ public class AvalanchaGenerator {
 			Character firstChar = first.getString(1).charAt(0);
 			if(firstChar.isUpperCase(firstChar)) {
 				String var = "c_" + consCount;
-				result += compileCons(first, null, null);
+				result += compileCons(patterns, first, null, null);
 				consCount++;
 				if(canPrint) {
 					result += "printTerm(" + var + ");\r\n";
@@ -440,7 +454,7 @@ public class AvalanchaGenerator {
 						}else {
 							var += ", c_" + (consCount);
 						}
-						result += compileCons(params.getJSONArray(i), null, null);
+						result += compileCons(patterns, params.getJSONArray(i), null, null);
 						
 					}
 					if(canPrint) {
@@ -469,18 +483,18 @@ public class AvalanchaGenerator {
 		return result; 
 	}
 
-	private static String compileRecursiveCons(String var, JSONArray recursive) {
+	private static String compileRecursiveCons(String var, JSONArray patterns, JSONArray recursive) {
 		String result = "";
 		
 		JSONArray item = recursive.getJSONArray(0);
 		Character firstChar = item.getString(1).charAt(0);
 		//me fijo si son construcciones
 		if(firstChar.isUpperCase(firstChar)) {
-				result += compileCons(item, var, null);
+				result += compileCons(patterns, item, var, null);
 				
 				if(recursive.length() > 1) {
 					JSONArray recursiveArray = recursive.getJSONArray(1);
-					result += compileCons(recursiveArray, var, null);
+					result += compileCons(patterns, recursiveArray, var, null);
 				}
 		}
 		else {
@@ -489,18 +503,21 @@ public class AvalanchaGenerator {
 				item = recursive.getJSONArray(i);
 				firstChar = item.getString(1).charAt(0);
 				if(firstChar.isUpperCase(firstChar)) {
-					result += compileCons(item, var, null);
+					result += compileCons(patterns, item, var, null);
 					
 					if(recursive.length() > 1) {
 						JSONArray recursiveArray = recursive.getJSONArray(1);
-						result += compileCons(recursiveArray, var, null);
+						result += compileCons(patterns, recursiveArray, var, null);
 					}
 				} else {
 					if(item.getString(0).equals("var")) {
 						System.out.println("es p var");
-						result += var + "->children.push_back(" + getVar(item.getString(1), recursive) + ");\r\n";
+						result += var + "->children.push_back(" + getVar(patterns, item.getString(1), recursive) + ");\r\n";
 					}else {
-						result += compileFun(item, var, null);
+						String constructor = item.getString(0);
+						if(constructor.equals("pcons") || constructor.equals("app")) {
+							result += compileFun(patterns, item, var, null);
+						}
 					}
 				}
 				consCount++;
@@ -510,9 +527,32 @@ public class AvalanchaGenerator {
 		return result;
 	}
 
-	private static String getVar(String var, JSONArray recursive) {
+	private static String getVar(JSONArray patterns, String var, JSONArray recursive) {
 		String result = null;
 		
+		//para construcciones. TODO verificar que sirva en general para sacar el segundo for
+		for(int i = 0; i < patterns.length(); i++) {
+			JSONArray expr = patterns.getJSONArray(i);
+			if(expr.getString(0).equals("pcons")) {
+				JSONArray children = expr.getJSONArray(2); 
+				for (int j = 0; j < children.length(); j++) {
+					JSONArray child = children.getJSONArray(j);
+					if(child.getString(0).equals("pvar")) {
+						if(child.getString(1).equals(var)) {
+							return "x_" + i + "->children[" + j + "]";
+						}
+					}
+				}
+			} else {
+				if(expr.getString(0).equals("pvar")) {
+					if(expr.getString(1).equals(var)) {
+						return "x_" + i;
+					}
+				}
+			}
+		}
+		
+		// para variables concretas
 		for (int i = 0; i < recursive.length(); i++) {
 			if(recursive.getJSONArray(i).length() > 1) { // significa que no es pwild
 				if(var.equals(recursive.getJSONArray(i).getString(1))) {
@@ -524,22 +564,74 @@ public class AvalanchaGenerator {
 		return result; 
 	}
 
-	private static String compileFun(JSONArray item, String parentVar, String parentTerm) {
+	private static String compileFun(JSONArray patterns, JSONArray item, String parentVar, String parentTerm) {
 		String result = "";
 		
 		String var = "";
-		JSONArray params = item.getJSONArray(2);
-		boolean isFirst = true;
-		consCount = parentTerm == null ? consCount : consCount + 1;
-		for (int i = 0; i < params.length(); i++) {
-			if(isFirst) {
-				isFirst = false;
-				var += "c_" + (consCount);
-			}else {
-				var += ", c_" + (consCount);
+		if(item.length() > 2) {
+			JSONArray params = item.getJSONArray(2);
+			boolean isFirst = true;
+			consCount = parentTerm == null ? consCount : consCount + 1;
+			for (int i = 0; i < params.length(); i++) {
+				JSONArray param = params.getJSONArray(i);
+				if(patterns == null) {
+					if(isFirst) {
+						isFirst = false;
+						var += "c_" + (consCount);
+					}else {
+						var += ", c_" + (consCount);
+					}
+				}else {
+					for (int j = 0; j < patterns.length(); j++) {
+						JSONArray expr = patterns.getJSONArray(i);
+						boolean encontre = false;
+						if(expr.getString(0).equals("pvar")) {
+							if(expr.getString(1).equals(param.getString(1))) {
+								if(isFirst) {
+									isFirst = false;
+									var += "x_" + i;
+									encontre = true;
+								}else {
+									encontre = true;
+									var += ", x_" + i;
+								}
+							}
+						}else {//pcons o pwild
+							if(expr.getString(0).equals("pcons")) {
+								JSONArray children = expr.getJSONArray(2); 
+								for (int k = 0; k < children.length(); k++) {
+									JSONArray child = children.getJSONArray(k);
+									if(child.getString(0).equals("pvar")) {
+										if(child.getString(1).equals(param.getString(1))) {
+											if(isFirst) {
+												isFirst = false;
+												var += "x_" + j + "->children[" + k + "]";
+												encontre = true;
+											}else {
+												encontre = true;
+												var += ", x_" + j + "->children[" + k + "]";
+											}
+										}
+									}
+								}
+							}
+						}
+						if(encontre) {
+							break;
+						}
+					}
+				}
+					
+//					
+//				if(isFirst) {
+//					isFirst = false;
+//					var += "c_" + (consCount);
+//				}else {
+//					var += ", c_" + (consCount);
+//				}
+				result += compileCons(null, param, null, "c_" + consCount);
+				
 			}
-			result += compileCons(params.getJSONArray(i), null, "c_" + consCount);
-			
 		}
 		if(parentTerm != null) {
 			result += "Term* " + parentTerm + " = f_" + funMap.get(item.getString(1)) + "(" + var + ");\r\n";
@@ -555,7 +647,8 @@ public class AvalanchaGenerator {
 		return result;
 	}
 
-	private static String compileCons(JSONArray first, String parentVar, String parentTerm) {
+    // si patterns es null no necesita patterns
+	private static String compileCons(JSONArray patterns, JSONArray first, String parentVar, String parentTerm) {
 		String result = "";
 //		if(first.getString(0).equals("app")) {
 ////			result += "printTerm(f_" + funMap.get(first.getString(1)) + "(" + parameters + "));\r\n";
@@ -580,14 +673,14 @@ public class AvalanchaGenerator {
 			}
 			consCount++;
 			if(!first.getJSONArray(2).isEmpty()) {
-				result += compileRecursiveCons(var, first.getJSONArray(2));
+				result += compileRecursiveCons(var, patterns, first.getJSONArray(2));
 			}
 		}else {
-			if(first.getString(0).equals("pvar")) {
+			if(first.getString(0).equals("pvar") || first.getString(0).equals("var")) {
 //				System.out.println("es p var");
 //				result += "x";
 			}else {
-				result += compileFun(first, parentVar, parentTerm);
+				result += compileFun(patterns, first, parentVar, parentTerm);
 			}
 		}
 		
