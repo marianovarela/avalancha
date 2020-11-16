@@ -23,14 +23,14 @@ public class AvalanchaGenerator {
 	
 	public static void main(String[] args) {
 		JSONArray ast = AvalanchaRunner.getASTToJSON(
-				StringCases.uno     // ok
+//				StringCases.uno     // ok
 //				StringCases.dos     // ok
 //				StringCases.tres    // ok
 //				StringCases.cuatro	// ok
 //				StringCases.cinco   // ok
 //				StringCases.seis    // ok
 //				StringCases.siete
-//				StringCases.ocho    // ok 
+				StringCases.ocho    // ok 
 //				StringCases.nueve   // ok
 //				StringCases.diez    // ok
 //				"fun sum\r\n"
@@ -130,6 +130,7 @@ public class AvalanchaGenerator {
 //				+ "    }\r\n"
 				+ "}\r\n"
 				+ "void printTerm(Term* t) {\r\n"
+				+ "incref(t);\r\n"
 				+ "    for (auto it = constructorMap.begin(); it != constructorMap.end(); ++it){ \r\n"
 				+ "        if (it->second == t->tag){\r\n"
 				+ "         cout << it->first ;}\r\n"
@@ -149,6 +150,7 @@ public class AvalanchaGenerator {
 				+ "        }\r\n"
 				+ "        cout << \")\" ;\r\n"
 				+ "    }    \r\n"
+				+ " decref(t);\r\n"
 				+ "} "
 				+ " \r\n"
 				+ "bool exists(map<string, int> constructorMap, string value){\r\n"
@@ -211,7 +213,8 @@ public class AvalanchaGenerator {
 						+ "}\r\n"
 						+ "Term* f_" + varFun + "(" + signatureProcessed + ") {\r\n" 
 						+ "pre_" + varFun + "(" + params + ");\r\n";
-				String postString = "post_" + varFun + "(" + params + (signatureProcessed.isEmpty() ? "" : ", ") + "res);\r\n";
+				String postString = "incref(res);\r\n"
+						+ "post_" + varFun + "(" + params + (signatureProcessed.isEmpty() ? "" : ", ") + "res);\r\n";
 				result += makeRules(rules, arity, params, postString);		
 //			    result += postString + "}\r\n";
 //			    		+ "return res;\r\n\"";
@@ -560,7 +563,6 @@ public class AvalanchaGenerator {
 					}
 				} else {
 					if(item.getString(0).equals("var")) {
-						System.out.println("es p var");
 						result += var + "->children.push_back(" + getVar(patterns, item.getString(1), recursive) + ");\r\n";
 					}else {
 						String constructor = item.getString(0);
