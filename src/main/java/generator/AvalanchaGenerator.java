@@ -23,12 +23,13 @@ public class AvalanchaGenerator {
 	
 	public static void main(String[] args) {
 		JSONArray ast = AvalanchaRunner.getASTToJSON(
-//				StringCases.uno     // ok
+				StringCases.uno     // ok
 //				StringCases.dos     // ok
 //				StringCases.tres    // ok
 //				StringCases.cuatro	// ok
 //				StringCases.cinco   // ok
-				StringCases.seis    // ok
+//				StringCases.seis    // ok
+//				StringCases.siete
 //				StringCases.ocho    // ok 
 //				StringCases.nueve   // ok
 //				StringCases.diez    // ok
@@ -381,8 +382,35 @@ public class AvalanchaGenerator {
 
 	private static String getParams(String varRes, JSONArray params, JSONArray patterns) {
 		String var = "";
-		
+		boolean isFirst = false;
 		//TODO: buscar entre reglas y patrones a cual corresponde 
+		for (int i = 0; i < params.length(); i++) {
+			JSONArray param = params.getJSONArray(i);
+			if(param.getString(1).equals("var")) {
+				for (int j = 0; j < patterns.length(); j++) {
+					JSONArray pattern = patterns.getJSONArray(j);
+					if(pattern.getString(0).equals("pvar")) {
+						if(pattern.getString(1).equals(param.getString(1))) {
+							if(isFirst) {
+								isFirst = true;
+								var = "x_" + j;
+							}else {
+								var = ", x_" + j;
+							}
+						}
+					} else { //es pcons
+						
+					}
+				}
+			}else { // app
+				if(isFirst) {
+					isFirst = true;
+					var = "" + (consCount - 1);
+				}else {
+					var = ", " + (consCount - 1);
+				}
+			}
+		}
 		var = "x_1, c_9";
 		return var;
 	}
