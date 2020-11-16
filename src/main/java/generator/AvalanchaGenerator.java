@@ -28,7 +28,7 @@ public class AvalanchaGenerator {
 //				StringCases.tres    // ok
 //				StringCases.cuatro	// ok
 //				StringCases.cinco   // ok
-				StringCases.seis
+//				StringCases.seis    // ok
 //				StringCases.ocho    // ok 
 //				StringCases.nueve   // ok
 //				StringCases.diez    // ok
@@ -347,12 +347,25 @@ public class AvalanchaGenerator {
 						result += ") {\r\n";
 					}
 					String varRes = null;
-					if(rule.getJSONArray(2).getString(0).equals("var")) {
+					String type = rule.getJSONArray(2).getString(0);
+					if(type.equals("var")) {
 						varRes = getVar(rule.getJSONArray(1), rule.getJSONArray(2).getString(1), rule.getJSONArray(1));
+					} else if(type.equals("app")){ // chequear que aca sea app
+						varRes = "c_" + consCount;
+						
+//						varRes = "Term* c_" + consCount + " = f_" + funMap.get(rule.getJSONArray(2).getString(1)) + "(" + "x_1, c_9" + ")";
+//						consCount++;
 					} else {
 						varRes = "c_" + consCount;
 					}
 					result += getEqualExpr(rule.getJSONArray(1), rule.getJSONArray(2), false);
+					if(type.equals("app")){
+						consCount++;
+						varRes = "c_" + consCount;
+//						String params = "x_1, c_9";
+						String parameters = getParams(varRes, rule.getJSONArray(2).getJSONArray(2), rule.getJSONArray(1));
+						result += "Term* c_" + consCount + " = f_" + funMap.get(rule.getJSONArray(2).getString(1)) + "(" + parameters + ");\r\n";
+					}
 					result += "Term* res = " + varRes + ";\r\n"
 							+ postString 
 							+ "return res;\r\n";
@@ -364,6 +377,14 @@ public class AvalanchaGenerator {
 			}
 		}
 		return result;
+	}
+
+	private static String getParams(String varRes, JSONArray params, JSONArray patterns) {
+		String var = "";
+		
+		//TODO: buscar entre reglas y patrones a cual corresponde 
+		var = "x_1, c_9";
+		return var;
 	}
 
 	private static String findConstructor(int index, List<String> constructors) {
@@ -582,6 +603,8 @@ public class AvalanchaGenerator {
 						var += ", c_" + (consCount);
 					}
 				}else {
+//					Term* c_9 = f_1(x_0->children[0], x_1);
+//					Term* c_10 = f_0(x_1, c_9);  
 					for (int j = 0; j < patterns.length(); j++) {
 						JSONArray expr = patterns.getJSONArray(i);
 						boolean encontre = false;
@@ -621,14 +644,7 @@ public class AvalanchaGenerator {
 						}
 					}
 				}
-					
-//					
-//				if(isFirst) {
-//					isFirst = false;
-//					var += "c_" + (consCount);
-//				}else {
-//					var += ", c_" + (consCount);
-//				}
+				
 				result += compileCons(null, param, null, "c_" + consCount);
 				
 			}
