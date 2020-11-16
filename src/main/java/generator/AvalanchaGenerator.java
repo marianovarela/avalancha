@@ -28,7 +28,7 @@ public class AvalanchaGenerator {
 //				StringCases.tres    // ok
 //				StringCases.cuatro	// ok
 //				StringCases.cinco   // ok
-//				StringCases.seis    // ok
+				StringCases.seis    // ok
 //				StringCases.ocho    // ok 
 //				StringCases.nueve   // ok
 //				StringCases.diez    // ok
@@ -42,10 +42,10 @@ public class AvalanchaGenerator {
 //				+ "print mul(Suc(Zero), Zero)\r\n"
 				);
 		
-		getCode(ast);
+		getCode(ast, "01");
 	}
 
-	private static void getCode(JSONArray ast) {
+	static void getCode(JSONArray ast, String filename) {
 		String userFunctions = generateDeclarations(ast);
 		String body = generateChecks(ast);//TODO llamar una sola vez y separar declaraciones de chequeos
 		
@@ -170,7 +170,7 @@ public class AvalanchaGenerator {
 		
 		System.out.println(program);
 		
-		FileUtil.generateFile("01", program);
+		FileUtil.generateFile(filename, program);
 	}
 	
 	private static String getNameFunction(Integer varFun) {
