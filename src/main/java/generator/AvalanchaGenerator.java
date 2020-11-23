@@ -29,8 +29,8 @@ public class AvalanchaGenerator {
 //				StringCases.cuatro	// ok
 //				StringCases.cinco   // ok
 //				StringCases.seis    // ok
-//				StringCases.siete
-				StringCases.ocho    // ok 
+				StringCases.siete
+//				StringCases.ocho    // ok 
 //				StringCases.nueve   // ok
 //				StringCases.diez    // ok
 //				"fun sum\r\n"
@@ -343,6 +343,13 @@ public class AvalanchaGenerator {
 											result += "eqTerms(x_" + j + "," + constructors.get(j) +  ")";
 										} else {
 											result += " && eqTerms(x_" + j + "," + constructors.get(j) +  ")";
+										}
+									}else if(type.equals("pvar")) {
+										if(isFirst) {
+											isFirst = false;
+											result += "eqTerms(x_" + j + ", c_" + (consCount - 1) +  ")";
+										} else {
+											result += " && eqTerms(x_" + j + ", c_" + (consCount - 1) +  ")";
 										}
 									}
 								}

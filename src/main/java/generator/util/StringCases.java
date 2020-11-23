@@ -142,7 +142,7 @@ public class StringCases {
 			+ "  B1(x)          -> Suc(mul2(binary_to_unary(x)))\r\n"
 			+ "\r\n"
 			+ "print mul(Suc(Suc(Suc(Zero))), Suc(Suc(Suc(Suc(Zero)))))\r\n"
-			+ "print binary_to_unary(mulb(B1(B1(Z)), B0(B0(B1(Z)))))\r\n"
+//			+ "print binary_to_unary(mulb(B1(B1(Z)), B0(B0(B1(Z)))))\r\n"
 			+ "\r\n"
 			+ "";
 	

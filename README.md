@@ -40,3 +40,7 @@ c++ 01.cpp -o 01
 4. esto generara un 01.exe y ejecutar el mismo
 
 Nota: 01 fue el ejemplo tomado, para cada ejercicio correspondiente a los casos provistos se corresponden al número de cada caso.
+
+## MainGenerator
+
+De manera similar, pero con el fin de no tener que ejecutar todos los generadores de cada ejemplo, la clase MainGenerator.java genera todos los archivos con la nomenclatura detallada anteriormente.
